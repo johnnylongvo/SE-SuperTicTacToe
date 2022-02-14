@@ -1,23 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
+import 'bootstrap/dist/css/bootstrap.css';
+import Table from 'react-bootstrap/Table'
+import Button from 'react-bootstrap/Button';
+//import './App.css';
+import React, { useState } from 'react';
+
 
 function App() {
+  // Declare a new state variable, which we'll call "count"
+  const [count, setCount] = useState(0);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <ButtonToolbar aria-label="Toolbar with button groups">
+        <ButtonGroup className="me-2" aria-label="First group">
+          <Button>1</Button> <Button>2</Button> <Button>3</Button> <Button>4</Button>
+        </ButtonGroup>
+        <ButtonGroup className="me-2" aria-label="Second group">
+          <Button>5</Button> <Button>6</Button> <Button>7</Button>
+        </ButtonGroup>
+        <ButtonGroup aria-label="Third group">
+          <Button>8</Button>
+        </ButtonGroup>
+      </ButtonToolbar>
     </div>
   );
 }
