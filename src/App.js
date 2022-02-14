@@ -1,6 +1,8 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 //import './App.css';
 import React, { useState } from 'react';
 
