@@ -1,3 +1,4 @@
+
 export default class player {
     playerNumber = 0
     playerType = 0
@@ -16,7 +17,7 @@ export default class player {
 
     getPlayerType() {
         return this.playerType
-    }
+    }z
 
     setTimeout(timeOut) {
         this.timeout = timeOut
@@ -28,13 +29,11 @@ export default class player {
 
     setMove(move, i, j){
         this.move[i][j] = move
+        super.switchPlayer();
     }
 
     getMove(){
         return this.move
     }
 
-    playerChage(type) {
-        this.playerType = type
-    }
 }
