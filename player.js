@@ -17,7 +17,7 @@ export default class player {
 
     getPlayerType() {
         return this.playerType
-    }z
+    }
 
     setTimeout(timeOut) {
         this.timeout = timeOut
