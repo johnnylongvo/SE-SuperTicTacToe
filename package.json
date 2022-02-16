@@ -21,7 +21,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "jest",
     "eject": "react-scripts eject",
     "pushback": "git push origin backendtest"
   },
@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "gh-pages": "^3.2.3",
+    "jest": "^27.5.1",
     "webpack": "^5.68.0"
   }
 }
