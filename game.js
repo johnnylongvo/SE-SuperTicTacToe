@@ -1,43 +1,64 @@
-import player, {Player} from './player'
+mport player, { Player } from "./player";
+import { Human } from "./human";
 
 class game extends Player {
-    
-    state = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]; 
-    board
-    timer = 0
-    constructor () {
+  state = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""];
+  board;
+  timer = 0;
+  h = new Human();
 
-    }
+  constructor() {
+    this.setBoard();
+  }
 
-    setBoard() {
-       this.board = Array(5).fill(Array(5));  
-    }
+  selectOponentType(type) {
+    this.h.selectOponentType(type);
+  }
 
-    getBoard () {
-        return this.board
-    }
+  setBoard() {
+    this.board = Array(5).fill(Array(5));
+  }
 
-    setState(index) {
-        this.state[index] = this.playerType
-    }
+  getBoard() {
+    return this.board;
+  }
 
-    getState() {
-        return this.state
-    }
+  setState(index) {
+    this.state[index] = this.playerType;
+  }
 
-    setTimer(timer) {
-        this.timer = timer
-    }
+  getState() {
+    return this.state;
+  }
 
-    getTime() {
-        return this.timer
-    }
+  setTimer(timer) {
+    this.timer = timer;
+  }
 
-    gameRestart() {
-        this.state = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""];
-        this.setBoard()
-        this.setTimer(0)
-    
+  getTime() {
+    return this.timer;
+  }
+
+  gameRestart() {
+    this.state = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""];
+    this.setBoard();
+    this.setTimer(0);
+  }
+
+  switchPlayer() {
+    //switch player between AI to player.
+    if (this.playerType == "X") {
+      this.playerType = "O";
+    } else {
+      this.playerType = "X";
     }
+  }
+
+  checkRow() {
+    //check all rows if player is winner or not
+  }
+
+  winner() {
+    //check all possibilities to check winner
+  }
 }
-
