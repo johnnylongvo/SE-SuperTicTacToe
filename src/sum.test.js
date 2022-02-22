@@ -1,4 +1,4 @@
-const sum = require('./game');
+const sum = require('./sum');
 let xando = ["x","o",""];
 var rando = xando[Math.random(Math.floor()*xando.length)];
 

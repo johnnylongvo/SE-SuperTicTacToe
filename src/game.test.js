@@ -1,5 +1,5 @@
 //what to do next
-//tie conditions
+//player class and gameboard class
 
 // we need to install enumifyjs, use typescript, or homebrew an enum class
 const checkWinner = require('./game');
@@ -62,10 +62,20 @@ let oWinArr=['o', 'o','o','o','o',
 "x","o","x","o","x"
 ]
 
+let TieArr=['x', 'x','o','o','o',
+"o","x","o","x","o",
+"o","x","o","x","o",
+"x","o","x","o","x",
+"x","o","x","o","x"
+]
+
 test('tests game state for o winning', () => {
-   expect(checkWinner(randomarray)).toBe("o");
+   expect(checkWinner(oWinArr)).toBe("o");
  });
 test('tests game state for x winning', () => {
    expect(checkWinner(xWinArr)).toBe("x");
  });
+ test('tests game state for tie', () => {
+    expect(checkWinner(TieArr)).toBe(null);
+  });
 // etc...
