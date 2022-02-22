@@ -1,4 +1,5 @@
 //what to do next
+//tie conditions
 
 // we need to install enumifyjs, use typescript, or homebrew an enum class
 const checkWinner = require('./game');
