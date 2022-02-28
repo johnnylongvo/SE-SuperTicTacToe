@@ -1,0 +1,66 @@
+:root {
+    --sadboysummer: #3380FF;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    color: var(--sadboysummer);
+    font-family: sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+  
+  h1 {
+    font-size: 54px;
+    text-transform: uppercase;
+  }
+  
+  .container {
+      padding: 40px;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+    /* background-color: #e78af7; */
+  }
+  
+  #gameboard {
+    width: 750px;
+    margin-top: 40px;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .box {
+    height: 150px;
+    width: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 150px;
+    color: var(--sadboysummer);
+    background-color: black;
+  }
+  
+  .box:hover {
+    cursor: pointer;
+  }
+  
+  button {
+    padding: 10px 20px;
+    border-radius: 10px;
+    background-color: var(--sadboysummer);
+    color: white;
+    border-color: var(--sadboysummer);
+    font-size: 18px;
+    transition: 200ms transform;
+  }
+  
+  button:hover {
+    cursor: pointer;
+    transform: translateY(-2px);
+  }
+  
