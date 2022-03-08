@@ -44,7 +44,7 @@ function App() {
               {Array.from({ length: 5}).map((_, outerIndex) => (
                   <tr key={outerIndex}>
                       {Array.from({ length: 5}).map((_, innerIndex) => (
-                        <td class="border border-dark border-rounded" key={innerIndex}>
+                        <td class="text-center border-2 border-dark border-rounded" key={innerIndex}>
                             <button class="cell btn btn-secondary" id={"btn"+((outerIndex*5)+innerIndex)} onClick={handleClick}>{(outerIndex*5)+innerIndex}</button>
                         </td>
                       ))}
