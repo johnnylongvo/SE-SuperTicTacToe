@@ -43,7 +43,7 @@ section {
     border: 2px solid #ecd7ba;
     cursor: pointer;
     line-height: 100px;
-    font-size: 60px;
+    font-size: 3rem !important;
 }
 
 .game--status {
