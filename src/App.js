@@ -13,6 +13,7 @@ import React, { useState, useEffect } from "react";
 
 function App() {
   const [mark, setMark] = useState("");
+  const grid = Array(25).fill(null);
 
   const [isPlayerMove, setPlayerMove] = useState("");
 
@@ -38,6 +39,60 @@ function App() {
     [0, 6, 12, 18, 24],
     [4, 8, 12, 16, 20],
   ];
+
+  const checkGameResult = (matrix) => {
+    for (let i = 0; i < matrix.length; i++) {
+      let row = [];
+
+      for (let j = 0; j < matrix[i].length; j++) {
+        row.push(matrix[i][j]);
+      }
+      if (row.every((value) => value && value === "o")) {
+        return [true, false];
+      } else if (row.every((value) => value && value === "x")) {
+        return [false, true];
+      }
+    }
+
+    for (let i = 0; i < matrix.length; i++) {
+      let column = [];
+
+      for (let j = 0; j < matrix[i].length; j++) {
+        column.push(matrix[j][i]);
+      }
+      if (column.every((value) => value && value === "o")) {
+        return [true, false];
+      } else if (column.every((value) => value && value === "x")) {
+        return [false, true];
+      }
+    }
+
+    let y = 0;
+    for (let i = 0; i < 5; i++) {
+      for (let j = 0; j < 5; j++) {
+        grid[y++] = matrix[i][j];
+      }
+    }
+
+    for (let i = 0; i < winningConditions.length; i++) {
+      const [a, b, c, d, e] = winningConditions[i];
+      if (
+        grid[a] &&
+        grid[a] === grid[b] &&
+        grid[a] === grid[c] &&
+        grid[a] === grid[d] &&
+        grid[a] === grid[e]
+      ) {
+        if (grid[a] === "o") return [true, false];
+        else return [false, true];
+      }
+    }
+
+    if (matrix.every((x) => x.every((z) => z !== null))) {
+      return [true, true];
+    }
+    return [false, false];
+  };
 
   var sectionStyle = {
     backgroundImage: `url(${BGImage})`,
@@ -70,6 +125,12 @@ function App() {
     if (isPlayerMove) {
       setTimeout(() => {
         computerMove();
+        const [computerResult, playerResult] = checkGameResult(matrix);
+        if (computerResult && playerResult) {
+          alert("Draw");
+        } else if (computerResult && !playerResult) {
+          alert("AI won");
+        } 
       }, 1000);
     }
   }, [isPlayerMove]);
@@ -77,15 +138,22 @@ function App() {
   const handleClick = (e, column, row) => {
     const newMatrix = [...matrix];
 
-    console.log(e.target.id);
-
     if (newMatrix[row][column] == null) {
       newMatrix[row][column] = "x";
       setMatrix(newMatrix);
     }
-    setPlayerMove(true);
-    setMark("x");
-    // }
+
+    console.log(e.target.id);
+    const [computerResult, playerResult] = checkGameResult(matrix);
+
+    if (computerResult && playerResult) {
+      alert("Draw");
+    } else if (!computerResult && playerResult) {
+      alert("You won");
+    } else {
+      setPlayerMove(true);
+      setMark("x");
+    }
   };
 
   return (
@@ -133,9 +201,11 @@ function App() {
                         onClick={(e) => handleClick(e, innerIndex, outerIndex)}
                       >
                         {/* {outerIndex * 5 + innerIndex} */}
-                        {column && column !== null ? (
-                          column === 'x' ? 'X': 'O'
-                        ): outerIndex * 5 + innerIndex}
+                        {column && column !== null
+                          ? column === "x"
+                            ? "X"
+                            : "O"
+                          : outerIndex * 5 + innerIndex}
                       </button>
                     </td>
                   ))}
