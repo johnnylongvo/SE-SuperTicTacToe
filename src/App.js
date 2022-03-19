@@ -13,7 +13,9 @@ import React, { useState, useEffect } from "react";
 
 function App() {
   const [mark, setMark] = useState("");
-  const grid = Array(25).fill(null);
+  const grid = Array.from(Array(25).keys());
+  const humanPlayer = "x";
+  const AIPlayer = "o";
 
   const [isPlayerMove, setPlayerMove] = useState("");
 
@@ -70,9 +72,11 @@ function App() {
     let y = 0;
     for (let i = 0; i < 5; i++) {
       for (let j = 0; j < 5; j++) {
-        grid[y++] = matrix[i][j];
+        if (matrix[i][j] != null) grid[y++] = matrix[i][j];
       }
     }
+
+    console.log(grid);
 
     for (let i = 0; i < winningConditions.length; i++) {
       const [a, b, c, d, e] = winningConditions[i];
@@ -98,6 +102,77 @@ function App() {
     backgroundImage: `url(${BGImage})`,
   };
 
+  const checkAllWin = (newGrid, player) => {
+    let moves = newGrid.reduce((a, e, i) => {
+      return e === player ? a.concat(i) : a;
+    }, []);
+
+    let gameWon = false;
+
+    for (let [index, win] of winningConditions.entries()) {
+      if (win.every((item) => moves.indexOf(item) > -1)) {
+        gameWon = {
+          index: index,
+          player: player,
+        };
+        break;
+      }
+    }
+    return gameWon;
+  };
+
+  const AIAlgo = (newGrid, player) => {
+    const availableBlocks = getEmptyBlocks();
+
+    if (checkAllWin(newGrid, humanPlayer)) {
+      return { score: -10 };
+    } else if (checkAllWin(newGrid, AIPlayer)) {
+      return { score: 10 };
+    } else if (availableBlocks.length === 0) {
+      return { score: 0 };
+    }
+
+    let movesArr = [];
+
+    for (let i = 0; i < availableBlocks.length; i++) {
+      let move = {};
+      move.index = newGrid[availableBlocks[i]];
+      newGrid[availableBlocks[i]] = player;
+
+      if (player === AIPlayer) {
+        let result = AIAlgo(newGrid, humanPlayer);
+        move.score = result.score;
+      } else {
+        let result = AIAlgo(newGrid, AIPlayer);
+        move.score = result.score;
+      }
+
+      newGrid[availableBlocks[i]] = move.index;
+      movesArr.push(move);
+    }
+
+    let smartMove;
+    if (player === AIPlayer) {
+      let smartScore = -10000;
+      for (let i = 0; i < movesArr.length; i++) {
+        if (movesArr[i].score > smartScore) {
+          smartScore = movesArr[i].score;
+          smartMove = i;
+        }
+      }
+    } else {
+      let smartScore = 10000;
+      for (let i = 0; i < movesArr.length; i++) {
+        if (movesArr[i].score > smartScore) {
+          smartScore = movesArr[i].score;
+          smartMove = i;
+        }
+      }
+    }
+
+    return movesArr[smartMove];
+  };
+
   const computerMove = () => {
     const newMatrix = [...matrix];
 
@@ -105,9 +180,11 @@ function App() {
       row = 0,
       found = false;
 
+    let AIBlock = AIAlgo(grid, AIPlayer);
+
     newMatrix.forEach((cell, rowindex) => {
       cell.forEach((item, colIndex) => {
-        if (item == null) {
+        if (rowindex * 5 + colIndex === AIBlock) {
           col = colIndex;
           row = rowindex;
           found = true;
@@ -130,29 +207,36 @@ function App() {
           alert("Draw");
         } else if (computerResult && !playerResult) {
           alert("AI won");
-        } 
+        }
       }, 1000);
     }
   }, [isPlayerMove]);
 
+  const getEmptyBlocks = () => grid.filter((item) => typeof item === "number");
+
   const handleClick = (e, column, row) => {
     const newMatrix = [...matrix];
+    const { id: blockId } = e.target;
 
-    if (newMatrix[row][column] == null) {
-      newMatrix[row][column] = "x";
-      setMatrix(newMatrix);
-    }
-
-    console.log(e.target.id);
-    const [computerResult, playerResult] = checkGameResult(matrix);
-
-    if (computerResult && playerResult) {
-      alert("Draw");
-    } else if (!computerResult && playerResult) {
-      alert("You won");
+    if (typeof grid[blockId] !== "number") {
+      alert("select other block");
     } else {
-      setPlayerMove(true);
-      setMark("x");
+      if (newMatrix[row][column] == null) {
+        newMatrix[row][column] = "x";
+        setMatrix(newMatrix);
+      }
+
+      console.log(e.target.id);
+      const [computerResult, playerResult] = checkGameResult(matrix);
+
+      if (computerResult && playerResult) {
+        alert("Draw");
+      } else if (!computerResult && playerResult) {
+        alert("You won");
+      } else {
+        setPlayerMove(true);
+        setMark("x");
+      }
     }
   };
 
@@ -197,7 +281,7 @@ function App() {
                     >
                       <button
                         class="cell btn btn-secondary"
-                        id={"btn" + (outerIndex * 5 + innerIndex)}
+                        id={outerIndex * 5 + innerIndex}
                         onClick={(e) => handleClick(e, innerIndex, outerIndex)}
                       >
                         {/* {outerIndex * 5 + innerIndex} */}
