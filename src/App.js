@@ -10,12 +10,20 @@ import Form from "react-bootstrap/Form";
 import "./App.css";
 import Card from "react-bootstrap/Card";
 import React, { useState, useEffect } from "react";
+import _ from 'lodash';
 
 function App() {
   const [mark, setMark] = useState("");
-  const grid = Array.from(Array(25).keys());
+  const [grid, setGrid] = useState(Array.from(Array(25).keys()));
   const humanPlayer = "x";
   const AIPlayer = "o";
+
+  let scores = {
+    X: 10,
+    O: -10,
+    tie: 0
+  };
+  
 
   const [isPlayerMove, setPlayerMove] = useState("");
 
@@ -42,7 +50,53 @@ function App() {
     [4, 8, 12, 16, 20],
   ];
 
+  const minimax = (board, depth, isMaximizing)=> {
+    let result = checkWinner(board);
+    if (result !== null) {
+      return scores[result];
+    }
+  
+    if (isMaximizing) {
+      let bestScore = -Infinity;
+      for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < 5; j++) {
+          // Is the spot available?
+          if (board[i][j] == null) {
+            board[i][j] = AIPlayer;
+            let score = minimax(board, depth + 1, false);
+            board[i][j] = null;
+           // bestScore = max(score, bestScore);
+            if(score > bestScore){
+              bestScore = score
+            }
+          }
+        }
+      }
+      return bestScore;
+    } else {
+      let bestScore = Infinity;
+      for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < 5; j++) {
+          // Is the spot available?
+          if (board[i][j] == null) {
+            board[i][j] = humanPlayer;
+            let score = minimax(board, depth + 1, true);
+            board[i][j] = null;
+            //bestScore = min(score, bestScore);
+            if(score < bestScore){
+              bestScore = score
+            }
+          }
+        }
+      }
+      return bestScore;
+    }
+  }
+
   const checkGameResult = (matrix) => {
+
+    let winner = null;
+
     for (let i = 0; i < matrix.length; i++) {
       let row = [];
 
@@ -50,9 +104,9 @@ function App() {
         row.push(matrix[i][j]);
       }
       if (row.every((value) => value && value === "o")) {
-        return [true, false];
+        return winner = 'o';//[true, false];
       } else if (row.every((value) => value && value === "x")) {
-        return [false, true];
+        return winner = 'x'; //[false, true];
       }
     }
 
@@ -63,44 +117,168 @@ function App() {
         column.push(matrix[j][i]);
       }
       if (column.every((value) => value && value === "o")) {
-        return [true, false];
+        return winner = 'o'; //return [true, false];
       } else if (column.every((value) => value && value === "x")) {
-        return [false, true];
+        return winner = 'x'; //return [false, true];
       }
     }
 
-    let y = 0;
-    for (let i = 0; i < 5; i++) {
-      for (let j = 0; j < 5; j++) {
-        if (matrix[i][j] != null) grid[y++] = matrix[i][j];
-      }
-    }
+    console.log(matrix);
 
-    console.log(grid);
+    // let y = 0;
+    // for (let i = 0; i < 5; i++) {
+    //   for (let j = 0; j < 5; j++) {
+    //     if (matrix[i][j] != null) {
+    //       let tempGrid = [...grid];
+    //       tempGrid[y]= matrix[i][j];
+    //       setGrid(tempGrid);
+    //     }
+    //   }
+    // }
 
-    for (let i = 0; i < winningConditions.length; i++) {
-      const [a, b, c, d, e] = winningConditions[i];
-      if (
-        grid[a] &&
-        grid[a] === grid[b] &&
-        grid[a] === grid[c] &&
-        grid[a] === grid[d] &&
-        grid[a] === grid[e]
-      ) {
-        if (grid[a] === "o") return [true, false];
-        else return [false, true];
-      }
-    }
+    // console.log(grid);
+
+    // for (let i = 0; i < winningConditions.length; i++) {
+    //   const [a, b, c, d, e] = winningConditions[i];
+    //   if (
+    //     grid[a] &&
+    //     grid[a] === grid[b] &&
+    //     grid[a] === grid[c] &&
+    //     grid[a] === grid[d] &&
+    //     grid[a] === grid[e]
+    //   ) {
+    //     if (grid[a] === "o") return [true, false];
+    //     else return [false, true];
+    //   }
+    // }
 
     if (matrix.every((x) => x.every((z) => z !== null))) {
-      return [true, true];
+      return winner = 'tie'; //return [true, true];
     }
-    return [false, false];
+    return winner;// return [false, false];
   };
 
   var sectionStyle = {
     backgroundImage: `url(${BGImage})`,
   };
+
+
+function equals3(a, b, c, d, e) {
+  return a == b && b == c && c==d && d==e && a != null;
+}
+
+function checkWinner(board) {
+  let winner = null;
+
+  // horizontal
+  for (let i = 0; i < 5; i++) {
+    if (equals3(board[i][0], board[i][1], board[i][2],board[i][3],board[i][4])) {
+      winner = board[i][0];
+    }
+  }
+
+  // Vertical
+  for (let i = 0; i < 5; i++) {
+    if (equals3(board[0][i], board[1][i], board[2][i], board[3][i], board[4][i])) {
+      winner = board[0][i];
+    }
+  }
+
+  // Diagonal
+  if (equals3(board[0][0], board[1][1], board[2][2], board[3][3], board[4][4])) {
+    winner = board[0][0];
+  }
+  if (equals3(board[4][0], board[3][1], board[2][2], board[1][3], board[0][4])) {
+    winner = board[4][0];
+  }
+
+  let openSpots = 0;
+  for (let i = 0; i < 5; i++) {
+    for (let j = 0; j < 5; j++) {
+      if (board[i][j] == null) {
+        openSpots++;
+      }
+    }
+  }
+
+  if (winner == null && openSpots == 0) {
+    return 'tie';
+  } else {
+    return winner;
+  }
+}
+
+function countDuplicate(arr){
+  let count = 0,j = 0; 
+  arr.forEach((element, index) => {
+    if(element === AIPlayer){
+      count++;
+    }
+    if(j === 0){
+    j = element == null ? index : null;
+    }
+  });
+
+  return [count, j];
+}
+
+const arrayColumn = (arr, n) => arr.map(x => x[n]);
+
+function checkOMoves(board) {
+  let x,y,k,l;
+
+  let horizontalMove = 0;
+  let verticalMove = 0;
+
+ 
+  // vertical
+  for (let i = 0; i < 5; i++) {
+    let arr = arrayColumn(board, i);
+    let count = countDuplicate(arr);
+    
+    if (count[0] > verticalMove) {
+      verticalMove = count[0];
+      x=i;
+      y=count[1];
+    }
+  }
+
+  //horizontal
+  for (let i = 0; i < 5; i++) {
+
+    let count = countDuplicate(board[i]);
+    if (count[0] > horizontalMove) {
+      horizontalMove = count[0];
+      k=i;
+      l= count[1];
+    }
+  }
+
+  if(horizontalMove > verticalMove){
+    return [k, l];
+  } else if(horizontalMove < verticalMove){
+    return [x, y];
+  } else if(horizontalMove === verticalMove){
+    return [x, y];
+  } else {
+    return [-1, -1];
+  }
+
+  // Diagonal
+  // if (equals3(board[0][0], board[1][1], board[2][2], board[3][3], board[4][4])) {
+  //   winner = board[0][0];
+  // }
+  // if (equals3(board[4][0], board[3][1], board[2][2], board[1][3], board[0][4])) {
+  //   winner = board[4][0];
+  // }
+
+
+  // if (winner == null && openSpots == 0) {
+  //   return 'tie';
+  // } else {
+  //   return winner;
+  // }
+}
 
   const checkAllWin = (newGrid, player) => {
     let moves = newGrid.reduce((a, e, i) => {
@@ -122,6 +300,7 @@ function App() {
   };
 
   const AIAlgo = (newGrid, player) => {
+    console.log('check');
     const availableBlocks = getEmptyBlocks();
 
     if (checkAllWin(newGrid, humanPlayer)) {
@@ -141,10 +320,10 @@ function App() {
 
       if (player === AIPlayer) {
         let result = AIAlgo(newGrid, humanPlayer);
-        move.score = result.score;
+        move.score = result == undefined ? 0 : result.score;
       } else {
         let result = AIAlgo(newGrid, AIPlayer);
-        move.score = result.score;
+        move.score = result == undefined ? 0 : result.score;
       }
 
       newGrid[availableBlocks[i]] = move.index;
@@ -174,27 +353,57 @@ function App() {
   };
 
   const computerMove = () => {
-    const newMatrix = [...matrix];
-
+    const newMatrix = _.cloneDeep(matrix);
+    let bestScore = -Infinity;
+    let move;
     let col = 0,
       row = 0,
       found = false;
 
-    let AIBlock = AIAlgo(grid, AIPlayer);
+    //let AIBlock = AIAlgo(grid, AIPlayer);
 
-    newMatrix.forEach((cell, rowindex) => {
-      cell.forEach((item, colIndex) => {
-        if (rowindex * 5 + colIndex === AIBlock) {
-          col = colIndex;
-          row = rowindex;
-          found = true;
-          return;
+    //check x player is winning or not
+    for (let i = 0; i < 5; i++) {
+      for (let j = 0; j < 5; j++) {
+        // Is the spot available?
+        if (newMatrix[i][j] == null) {
+          newMatrix[i][j] = humanPlayer;
+          //let score = minimax(newMatrix, 0, false);
+          let result = checkWinner(newMatrix);
+          newMatrix[i][j] = null;
+            //first case user select any box except middle
+          if(newMatrix[2][2] === null) {
+            move = { i: 2, j: 2 };
+            found = true;
+          } else
+          if(result === humanPlayer){ //winning conidtion for  'x'
+            move = { i, j };
+            found =true;
+            break;
+          } else if(result === null && !found){ // random position
+            move = { i, j };
+            break;
+          }
+          // if (score > bestScore) {
+          //   bestScore = score;
+          //   move = { i, j };
+          //   break;
+          // }
         }
-      });
-      if (found) return;
-    });
-    newMatrix[row][col] = "o";
-    setMatrix(newMatrix);
+      }
+    }
+
+    //check best positon of 'o'
+    let [i, j] = checkOMoves(newMatrix);
+
+    if(i !== -1 && j !== -1 && !found && i !== null && j!== null){
+      move = { i, j };
+    }
+
+    //let aiBlock = minimax(newMatrix, 0, false);
+
+    matrix[move.i][move.j] = "o";
+    setMatrix(matrix);
     setPlayerMove(false);
   };
 
@@ -202,10 +411,10 @@ function App() {
     if (isPlayerMove) {
       setTimeout(() => {
         computerMove();
-        const [computerResult, playerResult] = checkGameResult(matrix);
-        if (computerResult && playerResult) {
+        const winner = checkGameResult(matrix);
+        if (winner === 'tie') {
           alert("Draw");
-        } else if (computerResult && !playerResult) {
+        } else if (winner == AIPlayer) {
           alert("AI won");
         }
       }, 1000);
@@ -227,11 +436,11 @@ function App() {
       }
 
       console.log(e.target.id);
-      const [computerResult, playerResult] = checkGameResult(matrix);
+      const winner = checkGameResult(matrix);
 
-      if (computerResult && playerResult) {
+      if (winner == 'tie') {
         alert("Draw");
-      } else if (!computerResult && playerResult) {
+      } else if (winner == 'x') {
         alert("You won");
       } else {
         setPlayerMove(true);
@@ -322,7 +531,7 @@ function App() {
       </div>
     </div>
   );
-}
+}	
 
 const popover = (
   <Popover id="popover-basic">
