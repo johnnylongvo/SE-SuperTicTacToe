@@ -10,9 +10,14 @@ import Form from "react-bootstrap/Form";
 import "./App.css";
 import Card from "react-bootstrap/Card";
 import React, { useState, useEffect } from "react";
-import _ from 'lodash';
+import _ from "lodash";
+import AIvsAI from  './AIvsAI';
 
 function App() {
+  const [isGameSelected, setIsGameSelected] = useState(false);
+  const [isAIelected, setIsAIelected] = useState(false);
+
+  
   const [mark, setMark] = useState("");
   const [grid, setGrid] = useState(Array.from(Array(25).keys()));
   const humanPlayer = "x";
@@ -21,9 +26,8 @@ function App() {
   let scores = {
     X: 10,
     O: -10,
-    tie: 0
+    tie: 0,
   };
-  
 
   const [isPlayerMove, setPlayerMove] = useState("");
 
@@ -50,12 +54,12 @@ function App() {
     [4, 8, 12, 16, 20],
   ];
 
-  const minimax = (board, depth, isMaximizing)=> {
+  const minimax = (board, depth, isMaximizing) => {
     let result = checkWinner(board);
     if (result !== null) {
       return scores[result];
     }
-  
+
     if (isMaximizing) {
       let bestScore = -Infinity;
       for (let i = 0; i < 5; i++) {
@@ -65,9 +69,9 @@ function App() {
             board[i][j] = AIPlayer;
             let score = minimax(board, depth + 1, false);
             board[i][j] = null;
-           // bestScore = max(score, bestScore);
-            if(score > bestScore){
-              bestScore = score
+            // bestScore = max(score, bestScore);
+            if (score > bestScore) {
+              bestScore = score;
             }
           }
         }
@@ -83,18 +87,17 @@ function App() {
             let score = minimax(board, depth + 1, true);
             board[i][j] = null;
             //bestScore = min(score, bestScore);
-            if(score < bestScore){
-              bestScore = score
+            if (score < bestScore) {
+              bestScore = score;
             }
           }
         }
       }
       return bestScore;
     }
-  }
+  };
 
   const checkGameResult = (matrix) => {
-
     let winner = null;
 
     for (let i = 0; i < matrix.length; i++) {
@@ -104,9 +107,9 @@ function App() {
         row.push(matrix[i][j]);
       }
       if (row.every((value) => value && value === "o")) {
-        return winner = 'o';//[true, false];
+        return (winner = "o"); //[true, false];
       } else if (row.every((value) => value && value === "x")) {
-        return winner = 'x'; //[false, true];
+        return (winner = "x"); //[false, true];
       }
     }
 
@@ -117,9 +120,9 @@ function App() {
         column.push(matrix[j][i]);
       }
       if (column.every((value) => value && value === "o")) {
-        return winner = 'o'; //return [true, false];
+        return (winner = "o"); //return [true, false];
       } else if (column.every((value) => value && value === "x")) {
-        return winner = 'x'; //return [false, true];
+        return (winner = "x"); //return [false, true];
       }
     }
 
@@ -153,132 +156,137 @@ function App() {
     // }
 
     if (matrix.every((x) => x.every((z) => z !== null))) {
-      return winner = 'tie'; //return [true, true];
+      return (winner = "tie"); //return [true, true];
     }
-    return winner;// return [false, false];
+    return winner; // return [false, false];
   };
 
   var sectionStyle = {
     backgroundImage: `url(${BGImage})`,
   };
 
-
-function equals3(a, b, c, d, e) {
-  return a == b && b == c && c==d && d==e && a != null;
-}
-
-function checkWinner(board) {
-  let winner = null;
-
-  // horizontal
-  for (let i = 0; i < 5; i++) {
-    if (equals3(board[i][0], board[i][1], board[i][2],board[i][3],board[i][4])) {
-      winner = board[i][0];
-    }
+  function equals3(a, b, c, d, e) {
+    return a == b && b == c && c == d && d == e && a != null;
   }
 
-  // Vertical
-  for (let i = 0; i < 5; i++) {
-    if (equals3(board[0][i], board[1][i], board[2][i], board[3][i], board[4][i])) {
-      winner = board[0][i];
-    }
-  }
+  function checkWinner(board) {
+    let winner = null;
 
-  // Diagonal
-  if (equals3(board[0][0], board[1][1], board[2][2], board[3][3], board[4][4])) {
-    winner = board[0][0];
-  }
-  if (equals3(board[4][0], board[3][1], board[2][2], board[1][3], board[0][4])) {
-    winner = board[4][0];
-  }
-
-  let openSpots = 0;
-  for (let i = 0; i < 5; i++) {
-    for (let j = 0; j < 5; j++) {
-      if (board[i][j] == null) {
-        openSpots++;
+    // horizontal
+    for (let i = 0; i < 5; i++) {
+      if (
+        equals3(board[i][0], board[i][1], board[i][2], board[i][3], board[i][4])
+      ) {
+        winner = board[i][0];
       }
     }
-  }
 
-  if (winner == null && openSpots == 0) {
-    return 'tie';
-  } else {
-    return winner;
-  }
-}
-
-function countDuplicate(arr){
-  let count = 0,j = 0; 
-  arr.forEach((element, index) => {
-    if(element === AIPlayer){
-      count++;
+    // Vertical
+    for (let i = 0; i < 5; i++) {
+      if (
+        equals3(board[0][i], board[1][i], board[2][i], board[3][i], board[4][i])
+      ) {
+        winner = board[0][i];
+      }
     }
-    if(j === 0){
-    j = element == null ? index : null;
+
+    // Diagonal
+    if (
+      equals3(board[0][0], board[1][1], board[2][2], board[3][3], board[4][4])
+    ) {
+      winner = board[0][0];
     }
-  });
+    if (
+      equals3(board[4][0], board[3][1], board[2][2], board[1][3], board[0][4])
+    ) {
+      winner = board[4][0];
+    }
 
-  return [count, j];
-}
+    let openSpots = 0;
+    for (let i = 0; i < 5; i++) {
+      for (let j = 0; j < 5; j++) {
+        if (board[i][j] == null) {
+          openSpots++;
+        }
+      }
+    }
 
-const arrayColumn = (arr, n) => arr.map(x => x[n]);
-
-function checkOMoves(board) {
-  let x,y,k,l;
-
-  let horizontalMove = 0;
-  let verticalMove = 0;
-
- 
-  // vertical
-  for (let i = 0; i < 5; i++) {
-    let arr = arrayColumn(board, i);
-    let count = countDuplicate(arr);
-    
-    if (count[0] > verticalMove) {
-      verticalMove = count[0];
-      x=i;
-      y=count[1];
+    if (winner == null && openSpots == 0) {
+      return "tie";
+    } else {
+      return winner;
     }
   }
 
-  //horizontal
-  for (let i = 0; i < 5; i++) {
+  function countDuplicate(arr) {
+    let count = 0,
+      j = 0;
+    arr.forEach((element, index) => {
+      if (element === AIPlayer) {
+        count++;
+      }
+      if (j === 0) {
+        j = element == null ? index : null;
+      }
+    });
 
-    let count = countDuplicate(board[i]);
-    if (count[0] > horizontalMove) {
-      horizontalMove = count[0];
-      k=i;
-      l= count[1];
+    return [count, j];
+  }
+
+  const arrayColumn = (arr, n) => arr.map((x) => x[n]);
+
+  function checkOMoves(board) {
+    let x, y, k, l;
+
+    let horizontalMove = 0;
+    let verticalMove = 0;
+
+    // vertical
+    for (let i = 0; i < 5; i++) {
+      let arr = arrayColumn(board, i);
+      let count = countDuplicate(arr);
+
+      if (count[0] > verticalMove) {
+        verticalMove = count[0];
+        x = i;
+        y = count[1];
+      }
     }
+
+    //horizontal
+    for (let i = 0; i < 5; i++) {
+      let count = countDuplicate(board[i]);
+      if (count[0] > horizontalMove) {
+        horizontalMove = count[0];
+        k = i;
+        l = count[1];
+      }
+    }
+
+    if (horizontalMove > verticalMove) {
+      return [k, l];
+    } else if (horizontalMove < verticalMove) {
+      return [x, y];
+    } else if (horizontalMove === verticalMove) {
+      return [x, y];
+    } else {
+      return [-1, -1];
+    }
+
+    // Diagonal
+    // if (equals3(board[0][0], board[1][1], board[2][2], board[3][3], board[4][4])) {
+    //   winner = board[0][0];
+    // }
+    // if (equals3(board[4][0], board[3][1], board[2][2], board[1][3], board[0][4])) {
+    //   winner = board[4][0];
+    // }
+
+    // if (winner == null && openSpots == 0) {
+    //   return 'tie';
+    // } else {
+    //   return winner;
+    // }
   }
-
-  if(horizontalMove > verticalMove){
-    return [k, l];
-  } else if(horizontalMove < verticalMove){
-    return [x, y];
-  } else if(horizontalMove === verticalMove){
-    return [x, y];
-  } else {
-    return [-1, -1];
-  }
-
-  // Diagonal
-  // if (equals3(board[0][0], board[1][1], board[2][2], board[3][3], board[4][4])) {
-  //   winner = board[0][0];
-  // }
-  // if (equals3(board[4][0], board[3][1], board[2][2], board[1][3], board[0][4])) {
-  //   winner = board[4][0];
-  // }
-
-
-  // if (winner == null && openSpots == 0) {
-  //   return 'tie';
-  // } else {
-  //   return winner;
-  // }
-}
 
   const checkAllWin = (newGrid, player) => {
     let moves = newGrid.reduce((a, e, i) => {
@@ -300,7 +308,7 @@ function checkOMoves(board) {
   };
 
   const AIAlgo = (newGrid, player) => {
-    console.log('check');
+    console.log("check");
     const availableBlocks = getEmptyBlocks();
 
     if (checkAllWin(newGrid, humanPlayer)) {
@@ -371,16 +379,17 @@ function checkOMoves(board) {
           //let score = minimax(newMatrix, 0, false);
           let result = checkWinner(newMatrix);
           newMatrix[i][j] = null;
-            //first case user select any box except middle
-          if(newMatrix[2][2] === null) {
+          //first case user select any box except middle
+          if (newMatrix[2][2] === null) {
             move = { i: 2, j: 2 };
             found = true;
-          } else
-          if(result === humanPlayer){ //winning conidtion for  'x'
+          } else if (result === humanPlayer) {
+            //winning conidtion for  'x'
             move = { i, j };
-            found =true;
+            found = true;
             break;
-          } else if(result === null && !found){ // random position
+          } else if (result === null && !found) {
+            // random position
             move = { i, j };
             break;
           }
@@ -396,7 +405,7 @@ function checkOMoves(board) {
     //check best positon of 'o'
     let [i, j] = checkOMoves(newMatrix);
 
-    if(i !== -1 && j !== -1 && !found && i !== null && j!== null){
+    if (i !== -1 && j !== -1 && !found && i !== null && j !== null) {
       move = { i, j };
     }
 
@@ -412,9 +421,9 @@ function checkOMoves(board) {
       setTimeout(() => {
         computerMove();
         const winner = checkGameResult(matrix);
-        if (winner === 'tie') {
+        if (winner === "tie") {
           alert("Draw");
-        } else if (winner == AIPlayer) {
+        } else if (winner === AIPlayer) {
           alert("AI won");
         }
       }, 1000);
@@ -438,15 +447,27 @@ function checkOMoves(board) {
       console.log(e.target.id);
       const winner = checkGameResult(matrix);
 
-      if (winner == 'tie') {
+      if (winner == "tie") {
         alert("Draw");
-      } else if (winner == 'x') {
+      } else if (winner == "x") {
         alert("You won");
       } else {
         setPlayerMove(true);
         setMark("x");
       }
     }
+  };
+
+  const handlePlayAI = () => {
+    setIsGameSelected(true);
+  };
+
+  const handleRestart = () => {
+    setIsGameSelected(false);
+  };
+
+  const handleAIvsAI = () => {
+    setIsAIelected(true);
   };
 
   return (
@@ -460,19 +481,27 @@ function checkOMoves(board) {
         <div class="row justify-content-md-center">
           <ButtonToolbar aria-label="Toolbar with button groups">
             <div class="col d-grid justify-content-md-center">
-              <ButtonGroup className="mb-2" aria-label="First group">
-                <Button id="AIvAI">Watch AI Play</Button>
-                <Button id="playAI">Play vs AI</Button>
-                <Button id="playOnline">Play Online</Button>
-                <TimeoutPopover />
-              </ButtonGroup>
+              {isGameSelected ? (
+                <Button id="restart" onClick={handleRestart}>Restart</Button>
+              ) : (
+                <ButtonGroup className="mb-2" aria-label="First group">
+                  <Button id="AIvAI" onClick={handleAIvsAI}>Watch AI Play</Button>
+                  <Button id="playAI" onClick={handlePlayAI}>
+                    Play vs AI
+                  </Button>
+                  <Button id="playOnline">Play Online</Button>
+
+                  <TimeoutPopover />
+                </ButtonGroup>
+              )}
             </div>
           </ButtonToolbar>
         </div>
-        <div class="row d-flex justify-content-center">
-          <table class="table">
-            <tbody>
-              {/* {Array.from({ length: 5}).map((_, outerIndex) => (
+        {isGameSelected ? (
+          <div class="row d-flex justify-content-center">
+            <table class="table">
+              <tbody>
+                {/* {Array.from({ length: 5}).map((_, outerIndex) => (
                   <tr key={outerIndex}>
                       {Array.from({ length: 5}).map((_, innerIndex) => (
                         <td class="text-center border-2 border-dark border-rounded" key={innerIndex}>
@@ -481,32 +510,39 @@ function checkOMoves(board) {
                       ))}
                   </tr>
               ))} */}
-              {matrix.map((row, outerIndex) => (
-                <tr key={outerIndex}>
-                  {row.map((column, innerIndex) => (
-                    <td
-                      class="text-center border-2 border-dark border-rounded"
-                      key={innerIndex}
-                    >
-                      <button
-                        class="cell btn btn-secondary"
-                        id={outerIndex * 5 + innerIndex}
-                        onClick={(e) => handleClick(e, innerIndex, outerIndex)}
+                {matrix.map((row, outerIndex) => (
+                  <tr key={outerIndex}>
+                    {row.map((column, innerIndex) => (
+                      <td
+                        class="text-center border-2 border-dark border-rounded"
+                        key={innerIndex}
                       >
-                        {/* {outerIndex * 5 + innerIndex} */}
-                        {column && column !== null
-                          ? column === "x"
-                            ? "X"
-                            : "O"
-                          : outerIndex * 5 + innerIndex}
-                      </button>
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                        <button
+                          class="cell btn btn-secondary"
+                          id={outerIndex * 5 + innerIndex}
+                          onClick={(e) =>
+                            handleClick(e, innerIndex, outerIndex)
+                          }
+                        >
+                          {/* {outerIndex * 5 + innerIndex} */}
+                          {column && column !== null
+                            ? column === "x"
+                              ? "X"
+                              : "O"
+                            : outerIndex * 5 + innerIndex}
+                        </button>
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : isAIelected ?  (<AIvsAI matrix={matrix}/>) : (
+          <div className="start-game">
+            <h2>Please select any mode</h2>
+          </div>
+        )}
         <div class="row d-flex justify-content-center bg-opacity-25 ">
           <Card
             class="bg-opacity-25 bg-dark font-weight-bold "
@@ -531,7 +567,7 @@ function checkOMoves(board) {
       </div>
     </div>
   );
-}	
+}
 
 const popover = (
   <Popover id="popover-basic">

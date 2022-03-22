@@ -47,3 +47,9 @@ button .cell {
     transform: rotate(360deg);
   }
 }
+
+.start-game{
+  text-align: center;
+  background-color: aliceblue;
+}
+
