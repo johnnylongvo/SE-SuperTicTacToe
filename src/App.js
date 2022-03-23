@@ -11,13 +11,12 @@ import "./App.css";
 import Card from "react-bootstrap/Card";
 import React, { useState, useEffect } from "react";
 import _ from "lodash";
-import AIvsAI from  './AIvsAI';
+import AIvsAI from "./AIvsAI";
 
 function App() {
   const [isGameSelected, setIsGameSelected] = useState(false);
-  const [isAIelected, setIsAIelected] = useState(false);
+  const [isAISelected, setIsAISelected] = useState(false);
 
-  
   const [mark, setMark] = useState("");
   const [grid, setGrid] = useState(Array.from(Array(25).keys()));
   const humanPlayer = "x";
@@ -29,7 +28,8 @@ function App() {
     tie: 0,
   };
 
-  const [isPlayerMove, setPlayerMove] = useState("");
+  const [isPlayerMove, setPlayerMove] = useState(false);
+  const [isAIMove, setAIMove] = useState(false);
 
   const [matrix, setMatrix] = useState([
     [null, null, null, null, null],
@@ -166,7 +166,7 @@ function App() {
   };
 
   function equals3(a, b, c, d, e) {
-    return a == b && b == c && c == d && d == e && a != null;
+    return a === b && b === c && c === d && d === e && a != null;
   }
 
   function checkWinner(board) {
@@ -391,7 +391,6 @@ function App() {
           } else if (result === null && !found) {
             // random position
             move = { i, j };
-            break;
           }
           // if (score > bestScore) {
           //   bestScore = score;
@@ -405,7 +404,15 @@ function App() {
     //check best positon of 'o'
     let [i, j] = checkOMoves(newMatrix);
 
-    if (i !== -1 && j !== -1 && !found && i !== null && j !== null) {
+    if (
+      i !== -1 &&
+      j !== -1 &&
+      !found &&
+      i !== null &&
+      j !== null &&
+      i !== undefined &&
+      j !== undefined
+    ) {
       move = { i, j };
     }
 
@@ -433,27 +440,31 @@ function App() {
   const getEmptyBlocks = () => grid.filter((item) => typeof item === "number");
 
   const handleClick = (e, column, row) => {
-    const newMatrix = [...matrix];
-    const { id: blockId } = e.target;
+    if (!isPlayerMove) {
+      const newMatrix = [...matrix];
+      const { id: blockId } = e.target;
 
-    if (typeof grid[blockId] !== "number") {
-      alert("select other block");
-    } else {
-      if (newMatrix[row][column] == null) {
-        newMatrix[row][column] = "x";
-        setMatrix(newMatrix);
-      }
-
-      console.log(e.target.id);
-      const winner = checkGameResult(matrix);
-
-      if (winner == "tie") {
-        alert("Draw");
-      } else if (winner == "x") {
-        alert("You won");
+      if (typeof grid[blockId] !== "number") {
+        alert("select other block");
       } else {
-        setPlayerMove(true);
-        setMark("x");
+        if (newMatrix[row][column] == null) {
+          newMatrix[row][column] = "x";
+          setMatrix(newMatrix);
+        }
+
+        console.log(e.target.id);
+        const winner = checkGameResult(matrix);
+
+        if (winner === "tie") {
+          setMark("x");
+          alert("Draw");
+        } else if (winner === "x") {
+          setMark("x");
+          alert("You won");
+        } else {
+          setPlayerMove(true);
+          setMark("x");
+        }
       }
     }
   };
@@ -464,10 +475,18 @@ function App() {
 
   const handleRestart = () => {
     setIsGameSelected(false);
+    setIsAISelected(false);
+    setMatrix([
+      [null, null, null, null, null],
+      [null, null, null, null, null],
+      [null, null, null, null, null],
+      [null, null, null, null, null],
+      [null, null, null, null, null],
+    ]);
   };
 
   const handleAIvsAI = () => {
-    setIsAIelected(true);
+    setIsAISelected(true);
   };
 
   return (
@@ -475,17 +494,22 @@ function App() {
       <div class="container w-80 bg-secondary bg-opacity-25">
         <span class="d-flex justify-content-center">
           <h1 class="d-flex justify-content-center" id="playText">
-            Super Tic-Tac-Toe!
+            {!isGameSelected && !isAISelected ? "Super Tic-Tac-Toe!" : ""}
+            {isGameSelected ? "Player vs AI" : isAISelected ? "AI vs AI" : ""}
           </h1>
         </span>
         <div class="row justify-content-md-center">
           <ButtonToolbar aria-label="Toolbar with button groups">
             <div class="col d-grid justify-content-md-center">
-              {isGameSelected ? (
-                <Button id="restart" onClick={handleRestart}>Restart</Button>
+              {isGameSelected || isAISelected ? (
+                <Button id="restart" onClick={handleRestart}>
+                  Restart
+                </Button>
               ) : (
                 <ButtonGroup className="mb-2" aria-label="First group">
-                  <Button id="AIvAI" onClick={handleAIvsAI}>Watch AI Play</Button>
+                  <Button id="AIvAI" onClick={handleAIvsAI}>
+                    Watch AI Play
+                  </Button>
                   <Button id="playAI" onClick={handlePlayAI}>
                     Play vs AI
                   </Button>
@@ -538,7 +562,9 @@ function App() {
               </tbody>
             </table>
           </div>
-        ) : isAIelected ?  (<AIvsAI matrix={matrix}/>) : (
+        ) : isAISelected ? (
+          <AIvsAI matrix={matrix} />
+        ) : (
           <div className="start-game">
             <h2>Please select any mode</h2>
           </div>
