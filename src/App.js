@@ -166,7 +166,22 @@ function App() {
   };
 
   function equals3(a, b, c, d, e) {
-    return a === b && b === c && c === d && d === e && a != null;
+    let count = 0;
+    //if(a != null){
+    if ((a === b || a === c || a === d || a === e) && a != null && a !== 'o') {
+      count++;
+    }
+    if ((b === c || b === d || b === e) && b != null && b !== 'o') {
+      count++;
+    }
+    if ((c === d || c === e) && c != null & c !== 'o') {
+      count++;
+    }
+    if (d === e && d != null && d !== 'o') {
+      count++;
+    }
+    //}
+    return [count, count === 4];
   }
 
   function checkWinner(board) {
@@ -174,32 +189,53 @@ function App() {
 
     // horizontal
     for (let i = 0; i < 5; i++) {
-      if (
-        equals3(board[i][0], board[i][1], board[i][2], board[i][3], board[i][4])
-      ) {
-        winner = board[i][0];
+      let [count, status] = equals3(
+        board[i][0],
+        board[i][1],
+        board[i][2],
+        board[i][3],
+        board[i][4]
+      );
+      if (status || count >= 2) {
+        winner = humanPlayer; //board[i][0];
       }
     }
 
     // Vertical
     for (let i = 0; i < 5; i++) {
-      if (
-        equals3(board[0][i], board[1][i], board[2][i], board[3][i], board[4][i])
-      ) {
-        winner = board[0][i];
+      let [count, status] = equals3(
+        board[0][i],
+        board[1][i],
+        board[2][i],
+        board[3][i],
+        board[4][i]
+      );
+      if (status || count >= 2) {
+        winner = humanPlayer; //board[0][i];
       }
     }
 
     // Diagonal
-    if (
-      equals3(board[0][0], board[1][1], board[2][2], board[3][3], board[4][4])
-    ) {
-      winner = board[0][0];
+    let [count1, status1] = equals3(
+      board[0][0],
+      board[1][1],
+      board[2][2],
+      board[3][3],
+      board[4][4]
+    );
+    if (status1 || count1 >= 2) {
+      winner = humanPlayer; //board[0][0];
     }
-    if (
-      equals3(board[4][0], board[3][1], board[2][2], board[1][3], board[0][4])
-    ) {
-      winner = board[4][0];
+
+    let [count2, status2] = equals3(
+      board[4][0],
+      board[3][1],
+      board[2][2],
+      board[1][3],
+      board[0][4]
+    );
+    if (status2 || count2 >= 2) {
+      winner = humanPlayer; //board[4][0];
     }
 
     let openSpots = 0;
@@ -211,7 +247,7 @@ function App() {
       }
     }
 
-    if (winner == null && openSpots == 0) {
+    if (winner == null && openSpots === 0) {
       return "tie";
     } else {
       return winner;
@@ -399,6 +435,8 @@ function App() {
           // }
         }
       }
+
+      if (found) break;
     }
 
     //check best positon of 'o'
