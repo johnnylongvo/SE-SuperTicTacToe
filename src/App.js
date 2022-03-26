@@ -186,6 +186,7 @@ function App() {
 
   function checkWinner(board) {
     let winner = null;
+    let row,column;
 
     // horizontal
     for (let i = 0; i < 5; i++) {
@@ -224,7 +225,15 @@ function App() {
       board[4][4]
     );
     if (status1 || count1 >= 2) {
-      winner = humanPlayer; //board[0][0];
+      winner = 'd2';//humanPlayer; //board[0][0];
+      for(let i = 0;i <5; i++){
+        for(let j=0;j<5;j++){
+          if(i === j && board[i][j] === null){
+            row= i;
+            column = j;
+          }
+        }
+      }
     }
 
     let [count2, status2] = equals3(
@@ -235,7 +244,18 @@ function App() {
       board[0][4]
     );
     if (status2 || count2 >= 2) {
-      winner = humanPlayer; //board[4][0];
+      winner = 'd2';//humanPlayer; //board[4][0];
+      for(let i = 0;i <5; i++){
+        for(let j=0;j<5;j++){
+          if(i === (4-j) ){
+            console.log(i,j);
+          }
+          if(i === (4-j) && board[i][j] === null){
+            row= i;
+            column = j;
+          }
+        }
+      }
     }
 
     let openSpots = 0;
@@ -250,7 +270,7 @@ function App() {
     if (winner == null && openSpots === 0) {
       return "tie";
     } else {
-      return winner;
+      return {winner, row, column};
     }
   }
 
@@ -419,14 +439,23 @@ function App() {
           if (newMatrix[2][2] === null) {
             move = { i: 2, j: 2 };
             found = true;
-          } else if (result === humanPlayer) {
+          } else if (result.winner === humanPlayer && (result.row !== undefined && result.column !== undefined)) {
             //winning conidtion for  'x'
             move = { i, j };
             found = true;
             break;
-          } else if (result === null && !found) {
+          } else if((result.winner === 'd1' || result.winner === 'd2') && (result.row !== undefined && result.column !== undefined)){
+            
+            move = { i: result.row, j: result.column };
+            found = true;
+            break;
+            
+          } else          
+          if (!found) {
             // random position
+            //found = true;
             move = { i, j };
+            break;
           }
           // if (score > bestScore) {
           //   bestScore = score;
