@@ -1,0 +1,22 @@
+.timer{
+    font-Size: 48px !important;
+    width: 153px;
+    height: 89px;
+    border-radius: 50px;
+    float: right !important;
+}
+.flex-container {
+    width:100%;
+    display: grid;
+    grid-template-columns: auto auto auto auto auto auto auto auto;
+  }
+  
+  .flex-container > button {
+    /* opacity: 30%; */
+    justify-self: self-end;
+    align-self: center;
+    
+  }
+  /* .flex-container > a {
+    grid-column: 1 / span 7;
+  } */

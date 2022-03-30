@@ -9,11 +9,14 @@ import ButtonToolbar from "react-bootstrap/ButtonToolbar";
 import Form from "react-bootstrap/Form";
 import "./App.css";
 import Card from "react-bootstrap/Card";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import _ from "lodash";
 import AIvsAI from "./AIvsAI";
+import ChangeTimeoutPopupHOC from './components/changeTimeout/HOC/changeTimeoutPopupHOC';
+import ChangeTimeout from './components/changeTimeout/changeTimeout';
+import Timer from './components/Timer/Timer';
 
-function App() {
+function App(props) { 
   const [isGameSelected, setIsGameSelected] = useState(false);
   const [isAISelected, setIsAISelected] = useState(false);
 
@@ -53,49 +56,6 @@ function App() {
     [0, 6, 12, 18, 24],
     [4, 8, 12, 16, 20],
   ];
-
-  const minimax = (board, depth, isMaximizing) => {
-    let result = checkWinner(board);
-    if (result !== null) {
-      return scores[result];
-    }
-
-    if (isMaximizing) {
-      let bestScore = -Infinity;
-      for (let i = 0; i < 5; i++) {
-        for (let j = 0; j < 5; j++) {
-          // Is the spot available?
-          if (board[i][j] == null) {
-            board[i][j] = AIPlayer;
-            let score = minimax(board, depth + 1, false);
-            board[i][j] = null;
-            // bestScore = max(score, bestScore);
-            if (score > bestScore) {
-              bestScore = score;
-            }
-          }
-        }
-      }
-      return bestScore;
-    } else {
-      let bestScore = Infinity;
-      for (let i = 0; i < 5; i++) {
-        for (let j = 0; j < 5; j++) {
-          // Is the spot available?
-          if (board[i][j] == null) {
-            board[i][j] = humanPlayer;
-            let score = minimax(board, depth + 1, true);
-            board[i][j] = null;
-            //bestScore = min(score, bestScore);
-            if (score < bestScore) {
-              bestScore = score;
-            }
-          }
-        }
-      }
-      return bestScore;
-    }
-  };
 
   const checkGameResult = (matrix) => {
     let winner = null;
@@ -165,97 +125,89 @@ function App() {
     backgroundImage: `url(${BGImage})`,
   };
 
-  function equals3(a, b, c, d, e) {
-    let count = 0;
-    //if(a != null){
-    if ((a === b || a === c || a === d || a === e) && a != null && a !== 'o') {
-      count++;
+  const countXPlayerWins = (row, player)=>{
+    var count = 0, index;
+    row.filter(item=> {
+      if(item === player){
+        count++;
+      }
+    });
+    if(count >= 3){
+      row.filter((item, i)=> {
+        if(item === null){
+          index = i;
+        }
+      });
     }
-    if ((b === c || b === d || b === e) && b != null && b !== 'o') {
-      count++;
-    }
-    if ((c === d || c === e) && c != null & c !== 'o') {
-      count++;
-    }
-    if (d === e && d != null && d !== 'o') {
-      count++;
-    }
-    //}
-    return [count, count === 4];
+    return {status: count>=3, index};
   }
 
-  function checkWinner(board) {
+  function checkWinner(board, player) {
     let winner = null;
-    let row,column;
+    var row,column;
 
-    // horizontal
-    for (let i = 0; i < 5; i++) {
-      let [count, status] = equals3(
-        board[i][0],
-        board[i][1],
-        board[i][2],
-        board[i][3],
-        board[i][4]
-      );
-      if (status || count >= 2) {
-        winner = humanPlayer; //board[i][0];
+    for (let i = 0; i < matrix.length; i++) {
+      let columnArr = [];
+      let rowArr = [];
+    
+      //get each column
+      for (let j = 0; j < matrix[i].length; j++) {
+        columnArr.push(matrix[j][i]);
+      }
+
+      //get each row
+      for (let k = 0; k < matrix[i].length; k++) {
+        rowArr.push(matrix[i][k]);
+      }
+
+      let resultColumn = countXPlayerWins(columnArr ,player);
+      let resultRow = countXPlayerWins(rowArr, player);
+
+      if (resultColumn.status === true && resultColumn.index != undefined) {
+        winner= player;
+        row= resultColumn.index;
+        column = i;        
+      }
+      if (resultRow.status === true && resultRow.index != undefined) {
+        winner= player;
+        row= i;
+        column = resultRow.index;        
       }
     }
 
-    // Vertical
-    for (let i = 0; i < 5; i++) {
-      let [count, status] = equals3(
-        board[0][i],
-        board[1][i],
-        board[2][i],
-        board[3][i],
-        board[4][i]
-      );
-      if (status || count >= 2) {
-        winner = humanPlayer; //board[0][i];
-      }
-    }
+    let diagonal1 = [];
 
-    // Diagonal
-    let [count1, status1] = equals3(
-      board[0][0],
-      board[1][1],
-      board[2][2],
-      board[3][3],
-      board[4][4]
-    );
-    if (status1 || count1 >= 2) {
-      winner = 'd2';//humanPlayer; //board[0][0];
-      for(let i = 0;i <5; i++){
-        for(let j=0;j<5;j++){
-          if(i === j && board[i][j] === null){
-            row= i;
-            column = j;
-          }
+    for(let i = 0;i <5; i++){
+      for(let j=0;j<5;j++){
+        if(i === j){
+          diagonal1.push(matrix[i][j]);
         }
       }
     }
 
-    let [count2, status2] = equals3(
-      board[4][0],
-      board[3][1],
-      board[2][2],
-      board[1][3],
-      board[0][4]
-    );
-    if (status2 || count2 >= 2) {
-      winner = 'd2';//humanPlayer; //board[4][0];
-      for(let i = 0;i <5; i++){
-        for(let j=0;j<5;j++){
-          if(i === (4-j) ){
-            console.log(i,j);
-          }
-          if(i === (4-j) && board[i][j] === null){
-            row= i;
-            column = j;
-          }
+    let resultDiagonal1 = countXPlayerWins(diagonal1, player);
+    if (resultDiagonal1.status === true && resultDiagonal1.index != undefined) {
+      winner= player;
+      row= resultDiagonal1.index;
+      column = resultDiagonal1.index;        
+    }
+
+
+    let diagonal2 = [];
+
+    for(let i = 0;i <5; i++){
+      for(let j=0;j<5;j++){
+        if(i === (4-j)){
+          diagonal2.push(matrix[i][j]);
         }
       }
+    }
+
+    let resultDiagonal2 = countXPlayerWins(diagonal2, player);
+    if (resultDiagonal2.status === true && resultDiagonal2.index != undefined) {
+      winner= player;
+      row= resultDiagonal2.index;
+      column = (4-resultDiagonal2.index);        
     }
 
     let openSpots = 0;
@@ -291,130 +243,44 @@ function App() {
 
   const arrayColumn = (arr, n) => arr.map((x) => x[n]);
 
-  function checkOMoves(board) {
-    let x, y, k, l;
+  // function checkOMoves(board) {
+  //   let x, y, k, l;
 
-    let horizontalMove = 0;
-    let verticalMove = 0;
+  //   let horizontalMove = 0;
+  //   let verticalMove = 0;
 
-    // vertical
-    for (let i = 0; i < 5; i++) {
-      let arr = arrayColumn(board, i);
-      let count = countDuplicate(arr);
+  //   // vertical
+  //   for (let i = 0; i < 5; i++) {
+  //     let arr = arrayColumn(board, i);
+  //     let count = countDuplicate(arr);
 
-      if (count[0] > verticalMove) {
-        verticalMove = count[0];
-        x = i;
-        y = count[1];
-      }
-    }
+  //     if (count[0] > verticalMove) {
+  //       verticalMove = count[0];
+  //       x = i;
+  //       y = count[1];
+  //     }
+  //   }
 
-    //horizontal
-    for (let i = 0; i < 5; i++) {
-      let count = countDuplicate(board[i]);
-      if (count[0] > horizontalMove) {
-        horizontalMove = count[0];
-        k = i;
-        l = count[1];
-      }
-    }
+  //   //horizontal
+  //   for (let i = 0; i < 5; i++) {
+  //     let count = countDuplicate(board[i]);
+  //     if (count[0] > horizontalMove) {
+  //       horizontalMove = count[0];
+  //       k = i;
+  //       l = count[1];
+  //     }
+  //   }
 
-    if (horizontalMove > verticalMove) {
-      return [k, l];
-    } else if (horizontalMove < verticalMove) {
-      return [x, y];
-    } else if (horizontalMove === verticalMove) {
-      return [x, y];
-    } else {
-      return [-1, -1];
-    }
-
-    // Diagonal
-    // if (equals3(board[0][0], board[1][1], board[2][2], board[3][3], board[4][4])) {
-    //   winner = board[0][0];
-    // }
-    // if (equals3(board[4][0], board[3][1], board[2][2], board[1][3], board[0][4])) {
-    //   winner = board[4][0];
-    // }
-
-    // if (winner == null && openSpots == 0) {
-    //   return 'tie';
-    // } else {
-    //   return winner;
-    // }
-  }
-
-  const checkAllWin = (newGrid, player) => {
-    let moves = newGrid.reduce((a, e, i) => {
-      return e === player ? a.concat(i) : a;
-    }, []);
-
-    let gameWon = false;
-
-    for (let [index, win] of winningConditions.entries()) {
-      if (win.every((item) => moves.indexOf(item) > -1)) {
-        gameWon = {
-          index: index,
-          player: player,
-        };
-        break;
-      }
-    }
-    return gameWon;
-  };
-
-  const AIAlgo = (newGrid, player) => {
-    console.log("check");
-    const availableBlocks = getEmptyBlocks();
-
-    if (checkAllWin(newGrid, humanPlayer)) {
-      return { score: -10 };
-    } else if (checkAllWin(newGrid, AIPlayer)) {
-      return { score: 10 };
-    } else if (availableBlocks.length === 0) {
-      return { score: 0 };
-    }
-
-    let movesArr = [];
-
-    for (let i = 0; i < availableBlocks.length; i++) {
-      let move = {};
-      move.index = newGrid[availableBlocks[i]];
-      newGrid[availableBlocks[i]] = player;
-
-      if (player === AIPlayer) {
-        let result = AIAlgo(newGrid, humanPlayer);
-        move.score = result == undefined ? 0 : result.score;
-      } else {
-        let result = AIAlgo(newGrid, AIPlayer);
-        move.score = result == undefined ? 0 : result.score;
-      }
-
-      newGrid[availableBlocks[i]] = move.index;
-      movesArr.push(move);
-    }
-
-    let smartMove;
-    if (player === AIPlayer) {
-      let smartScore = -10000;
-      for (let i = 0; i < movesArr.length; i++) {
-        if (movesArr[i].score > smartScore) {
-          smartScore = movesArr[i].score;
-          smartMove = i;
-        }
-      }
-    } else {
-      let smartScore = 10000;
-      for (let i = 0; i < movesArr.length; i++) {
-        if (movesArr[i].score > smartScore) {
-          smartScore = movesArr[i].score;
-          smartMove = i;
-        }
-      }
-    }
-
-    return movesArr[smartMove];
-  };
+  //   if (horizontalMove > verticalMove) {
+  //     return [k, l];
+  //   } else if (horizontalMove < verticalMove) {
+  //     return [x, y];
+  //   } else if (horizontalMove === verticalMove) {
+  //     return [k, l];
+  //   } else {
+  //     return [-1, -1];
+  //   }
+  // }
 
   const computerMove = () => {
     const newMatrix = _.cloneDeep(matrix);
@@ -424,16 +290,14 @@ function App() {
       row = 0,
       found = false;
 
-    //let AIBlock = AIAlgo(grid, AIPlayer);
-
     //check x player is winning or not
     for (let i = 0; i < 5; i++) {
       for (let j = 0; j < 5; j++) {
         // Is the spot available?
         if (newMatrix[i][j] == null) {
           newMatrix[i][j] = humanPlayer;
-          //let score = minimax(newMatrix, 0, false);
-          let result = checkWinner(newMatrix);
+
+          let result = checkWinner(newMatrix, humanPlayer);
           newMatrix[i][j] = null;
           //first case user select any box except middle
           if (newMatrix[2][2] === null) {
@@ -441,7 +305,7 @@ function App() {
             found = true;
           } else if (result.winner === humanPlayer && (result.row !== undefined && result.column !== undefined)) {
             //winning conidtion for  'x'
-            move = { i, j };
+            move = { i:result.row , j: result.column };
             found = true;
             break;
           } else if((result.winner === 'd1' || result.winner === 'd2') && (result.row !== undefined && result.column !== undefined)){
@@ -452,8 +316,6 @@ function App() {
             
           } else          
           if (!found) {
-            // random position
-            //found = true;
             move = { i, j };
             break;
           }
@@ -469,23 +331,21 @@ function App() {
     }
 
     //check best positon of 'o'
-    let [i, j] = checkOMoves(newMatrix);
+    let resultOPlayer = checkWinner(newMatrix, AIPlayer);
 
     if (
-      i !== -1 &&
-      j !== -1 &&
       !found &&
-      i !== null &&
-      j !== null &&
-      i !== undefined &&
-      j !== undefined
+      resultOPlayer.row !== null &&
+      resultOPlayer.column !== null &&
+      resultOPlayer.row !== undefined &&
+      resultOPlayer.column !== undefined
     ) {
-      move = { i, j };
+      move = { i:resultOPlayer.row , j: resultOPlayer.column };
     }
 
     //let aiBlock = minimax(newMatrix, 0, false);
 
-    matrix[move.i][move.j] = "o";
+    matrix[move.i][move.j] = AIPlayer;
     setMatrix(matrix);
     setPlayerMove(false);
   };
@@ -555,7 +415,10 @@ function App() {
   const handleAIvsAI = () => {
     setIsAISelected(true);
   };
-
+  const openChangeTimeoutHandler = () => {
+    props.changeTimeoutToggleHandler();
+    console.log(props.showchangeTimeoutPopup)
+  }
   return (
     <div style={sectionStyle}>
       <div class="container w-80 bg-secondary bg-opacity-25">
@@ -565,13 +428,16 @@ function App() {
             {isGameSelected ? "Player vs AI" : isAISelected ? "AI vs AI" : ""}
           </h1>
         </span>
+        {(isGameSelected || isAISelected) &&
+          <Timer handleParentFun={handleRestart}/>
+        }
         <div class="row justify-content-md-center">
           <ButtonToolbar aria-label="Toolbar with button groups">
             <div class="col d-grid justify-content-md-center">
               {isGameSelected || isAISelected ? (
-                <Button id="restart" onClick={handleRestart}>
-                  Restart
-                </Button>
+                  <Button id="restart" onClick={handleRestart}>
+                    Restart
+                  </Button>
               ) : (
                 <ButtonGroup className="mb-2" aria-label="First group">
                   <Button id="AIvAI" onClick={handleAIvsAI}>
@@ -581,8 +447,12 @@ function App() {
                     Play vs AI
                   </Button>
                   <Button id="playOnline">Play Online</Button>
-
-                  <TimeoutPopover />
+                  <Button onClick={openChangeTimeoutHandler}>Change Timeout</Button>
+                  {
+                    props.showchangeTimeoutPopup &&
+                    <ChangeTimeout
+                    modalClosed={props.changeTimeoutToggleHandler} />
+                  }
                 </ButtonGroup>
               )}
             </div>
@@ -661,36 +531,5 @@ function App() {
     </div>
   );
 }
-
-const popover = (
-  <Popover id="popover-basic">
-    <Popover.Header as="h3">Change Move Time Limit</Popover.Header>
-    <Popover.Body>
-      <Form id="timeout-form">
-        <Form.Group>
-          <Form.Label>Time Limit Per Move:</Form.Label>
-          <Form.Control
-            type="number"
-            id="timeOutMinutes"
-            placeholder="Minutes"
-          ></Form.Control>
-        </Form.Group>
-        <Form.Group>
-          <Form.Control
-            type="number"
-            id="timeOutSeconds"
-            placeholder="Seconds"
-          ></Form.Control>
-        </Form.Group>
-      </Form>
-    </Popover.Body>
-  </Popover>
-);
-
-const TimeoutPopover = () => (
-  <OverlayTrigger trigger="click" placement="right" overlay={popover}>
-    <Button variant="primary">Change Timeout</Button>
-  </OverlayTrigger>
-);
-
-export default App;
+ 
+export default ChangeTimeoutPopupHOC(App);
