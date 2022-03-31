@@ -18,12 +18,19 @@
     "web-vitals": "^2.1.4",
     "yuka": "^0.7.7"
   },
+
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "pushfront": "git push origin frontendtest"
+    "nullcomm": "git commit --allow-empty -m \"Trigger rebuild\"",
+    "pushmast": "git push origin master",
+    "pushfront": "git push origin frontendtest",
+    "pushback": "git push origin backendtest",
+    "pushfull": "git push origin prodtest",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
