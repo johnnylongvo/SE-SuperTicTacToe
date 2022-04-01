@@ -20,7 +20,7 @@ return(<div class="row d-flex justify-content-center">
             key={innerIndex}
           >
             <button
-              class="cell btn btn-secondary"
+              className={`cell btn btn-secondary ${column === "x" ? 'x-color' : column === "o" ? 'o-color' : ''}`}
               id={outerIndex * 5 + innerIndex}
               
             >

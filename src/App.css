@@ -53,3 +53,10 @@ button .cell {
   background-color: aliceblue;
 }
 
+.x-color{
+  color: blue;
+}
+
+.o-color{
+  color: red;
+}
