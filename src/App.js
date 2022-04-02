@@ -303,7 +303,7 @@ function App(props) {
         } else{
          
         }
-      }, 1500);
+      }, 1000);
     }
   }, [isPlayerMove]);
 
@@ -311,7 +311,7 @@ function App(props) {
     if (!isPlayerMove && isAISelected) {
      const timeout = setTimeout(() => {
         handleAIvsAI();
-      }, 1500);
+      }, 1000);
     }
   }, [isPlayerMove]);
 
@@ -322,7 +322,7 @@ function App(props) {
       const newMatrix = [...matrix];
       const { id: blockId } = e.target;
 
-      if (typeof grid[blockId] !== "number") {
+      if (newMatrix[row][column] !== null) {
         alert("select other block");
       } else {
         if (newMatrix[row][column] == null) {
