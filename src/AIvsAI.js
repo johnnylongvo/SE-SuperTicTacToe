@@ -29,7 +29,7 @@ return(<div class="row d-flex justify-content-center">
                 ? column === "x"
                   ? "X"
                   : "O"
-                : outerIndex * 5 + innerIndex}
+                  : ""}
             </button>
           </td>
         ))}

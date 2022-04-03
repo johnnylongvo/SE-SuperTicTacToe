@@ -16,6 +16,14 @@ import ChangeTimeoutPopupHOC from './components/changeTimeout/HOC/changeTimeoutP
 import ChangeTimeout from './components/changeTimeout/changeTimeout';
 import Timer from './components/Timer/Timer';
 
+function sleep(milliseconds) {
+  const date = Date.now();
+  let currentDate = null;
+  do {
+    currentDate = Date.now();
+  } while (currentDate - date < milliseconds);
+}
+
 function App(props) { 
   const [isGameSelected, setIsGameSelected] = useState(false);
   const [isAISelected, setIsAISelected] = useState(false);
@@ -32,7 +40,6 @@ function App(props) {
   };
 
   const [isPlayerMove, setPlayerMove] = useState(false);
-  const [isAIMove, setAIMove] = useState(false);
 
   const [matrix, setMatrix] = useState([
     [null, null, null, null, null],
@@ -41,21 +48,6 @@ function App(props) {
     [null, null, null, null, null],
     [null, null, null, null, null],
   ]);
-
-  const winningConditions = [
-    [0, 1, 2, 3, 4],
-    [5, 6, 7, 8, 9],
-    [10, 11, 12, 13, 14],
-    [15, 16, 17, 18, 19],
-    [20, 21, 22, 23, 24],
-    [0, 5, 10, 15, 20],
-    [1, 6, 11, 16, 21],
-    [2, 7, 12, 17, 22],
-    [3, 8, 13, 18, 23],
-    [4, 9, 14, 19, 24],
-    [0, 6, 12, 18, 24],
-    [4, 8, 12, 16, 20],
-  ];
 
   const checkGameResult = (matrix) => {
     let winner = null;
@@ -280,6 +272,7 @@ function App(props) {
 
     matrix[move.i][move.j] = AIPlayer;
     setMatrix(matrix);
+    sleep(5000);
     setPlayerMove(false);
   };
 
@@ -377,6 +370,7 @@ function App(props) {
           setPlayerMove(true);
           setMark("x");
         }
+
       //}
     }
   };
@@ -415,8 +409,7 @@ function App(props) {
       isFound = newMatrix[row][column] == null ? true : false;
       // move = { i:resultXPlayer.row , j: resultXPlayer.column };
     }
-    
-
+  
     console.log(getEmptyBlocks());
 
     var count = 0;
@@ -472,7 +465,7 @@ function App(props) {
             {isGameSelected ? "Player vs AI" : isAISelected ? "AI vs AI" : ""}
           </h1>
         </span>
-        {(isGameSelected || isAISelected) &&
+        {(isGameSelected && !isPlayerMove) &&
           <Timer handleParentFun={handleRestart}/>
         }
         <div class="row justify-content-md-center">
@@ -529,12 +522,12 @@ function App(props) {
                             handleClick(e, innerIndex, outerIndex)
                           }
                         >
-                          {/* {outerIndex * 5 + innerIndex} */}
+                          {""}
                           {column && column !== null
                             ? column === "x"
                               ? "X"
                               : "O"
-                            : outerIndex * 5 + innerIndex}
+                              : ""}
                         </button>
                       </td>
                     ))}
@@ -557,16 +550,10 @@ function App(props) {
           >
             <ListGroup class="font-weight-bold" variant="flush">
               <ListGroup.Item class="font-weight-bold">
-                Player Moving --{" "}
-              </ListGroup.Item>
-              <ListGroup.Item class="font-weight-bold">
-                Time Remaining for Move --
+                Player Moving --
               </ListGroup.Item>
               <ListGroup.Item class="font-weight-bold">
                 Total Game Time --
-              </ListGroup.Item>
-              <ListGroup.Item class="font-weight-bold">
-                Clicked Button:{" "}
               </ListGroup.Item>
             </ListGroup>
           </Card>
