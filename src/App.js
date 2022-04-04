@@ -455,7 +455,7 @@ function App(props) {
     <div style={sectionStyle}>
       <div class="container w-80 bg-secondary bg-opacity-25">
         <span class="d-flex justify-content-center">
-          <h1 class="title d-flex justify-content-center" id="playText">
+          <h1 class="tile title d-flex justify-content-center" id="playText">
             {!isGameSelected && !isAISelected ? "Super Tic-Tac-Toe Game" : ""}
             {isGameSelected ? "Player vs AI" : isAISelected ? "AI vs AI" : ""}
           </h1>
