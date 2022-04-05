@@ -26,6 +26,7 @@ function sleep(milliseconds) {
 
 function App(props) { 
   const [isGameSelected, setIsGameSelected] = useState(false);
+  const [isPlayerMove, setPlayerMove] = useState(false);
   const [isAISelected, setIsAISelected] = useState(false);
 
   const [mark, setMark] = useState("");
@@ -38,8 +39,6 @@ function App(props) {
     O: -10,
     tie: 0,
   };
-
-  const [isPlayerMove, setPlayerMove] = useState(false);
 
   const [matrix, setMatrix] = useState([
     [null, null, null, null, null],
@@ -461,7 +460,7 @@ function App(props) {
       <div class="container w-80 bg-secondary bg-opacity-25">
         <span class="d-flex justify-content-center">
           <h1 class="d-flex justify-content-center" id="playText">
-            {!isGameSelected && !isAISelected ? "Super Tic-Tac-Toe!" : ""}
+            {!isGameSelected && !isAISelected ? "Super Tic-Tac-Toe Game" : ""}
             {isGameSelected ? "Player vs AI" : isAISelected ? "AI vs AI" : ""}
           </h1>
         </span>
@@ -481,10 +480,10 @@ function App(props) {
                     Watch AI Play
                   </Button>
                   <Button id="playAI" onClick={handlePlayAI}>
-                    Play vs AI
+                    Player vs AI
                   </Button>
                   <Button id="playOnline">Play Online</Button>
-                  <Button onClick={openChangeTimeoutHandler}>Change Timeout</Button>
+                  <Button onClick={openChangeTimeoutHandler}>Change Timer</Button>
                   {
                     props.showchangeTimeoutPopup &&
                     <ChangeTimeout

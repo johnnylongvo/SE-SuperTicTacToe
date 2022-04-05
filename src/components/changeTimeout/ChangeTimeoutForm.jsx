@@ -21,7 +21,7 @@ const ChangeTimeoutForm = (props) => {
           <Form id="timeout-form" onSubmit={handle}>
           <Modal.Body>
         <Form.Group>
-          <Form.Label>Time Limit Per Move:</Form.Label>
+          <Form.Label>Time Limit Per Move: (min, secs) </Form.Label>
           <Form.Control
             type="number"
             id="timeOutMinutes"
@@ -43,7 +43,7 @@ const ChangeTimeoutForm = (props) => {
           <div className="modal-footer">
             <div className="form-group row tab-action">
               <div className="col-12 p-0">
-                <Button variant="primary" type="submit" >Save</Button>
+                <Button variant="primary" type="submit" >Set Timer</Button>
                 </div>
             </div>
           </div>
