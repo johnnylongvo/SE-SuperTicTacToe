@@ -24,16 +24,16 @@ function sleep(milliseconds) {
   } while (currentDate - date < milliseconds);
 }
 
-function App(props) {
-  const [isPlayerMove, setPlayerMove] = useState(false);
+function App(props) { 
   const [isGameSelected, setIsGameSelected] = useState(false);
+  const [isPlayerMove, setPlayerMove] = useState(false);
   const [isAISelected, setIsAISelected] = useState(false);
+
   const [mark, setMark] = useState("");
   const [grid, setGrid] = useState(Array.from(Array(25).keys()));
   const humanPlayer = "x";
   const AIPlayer = "o";
 
-  //Score 10 points 
   let scores = {
     X: 10,
     O: -10,
@@ -83,31 +83,35 @@ function App(props) {
     return winner; // return [false, false];
   };
 
-  const countXPlayerWins = (row, player) => {
+  var sectionStyle = {
+    backgroundImage: `url(${BGImage})`,
+  };
+
+  const countXPlayerWins = (row, player)=>{
     var count = 0, index;
-    row.filter(item => {
-      if (item === player) {
+    row.filter(item=> {
+      if(item === player){
         count++;
       }
     });
-    if (count >= 3) {
-      row.filter((item, i) => {
-        if (item === null) {
+    if(count >= 3){
+      row.filter((item, i)=> {
+        if(item === null){
           index = i;
         }
       });
     }
-    return { status: count >= 3, index };
+    return {status: count>=3, index};
   }
 
   function checkWinner(board, player) {
     let winner = null;
-    var row, column;
+    var row,column;
 
     for (let i = 0; i < matrix.length; i++) {
       let columnArr = [];
       let rowArr = [];
-
+    
       //get each column
       for (let j = 0; j < matrix[i].length; j++) {
         columnArr.push(matrix[j][i]);
@@ -118,26 +122,26 @@ function App(props) {
         rowArr.push(matrix[i][k]);
       }
 
-      let resultColumn = countXPlayerWins(columnArr, player);
+      let resultColumn = countXPlayerWins(columnArr ,player);
       let resultRow = countXPlayerWins(rowArr, player);
 
       if (resultColumn.status === true && resultColumn.index != undefined) {
-        winner = player;
-        row = resultColumn.index;
-        column = i;
+        winner= player;
+        row= resultColumn.index;
+        column = i;        
       }
       if (resultRow.status === true && resultRow.index != undefined) {
-        winner = player;
-        row = i;
-        column = resultRow.index;
+        winner= player;
+        row= i;
+        column = resultRow.index;        
       }
     }
 
     let diagonal1 = [];
 
-    for (let i = 0; i < 5; i++) {
-      for (let j = 0; j < 5; j++) {
-        if (i === j) {
+    for(let i = 0;i <5; i++){
+      for(let j=0;j<5;j++){
+        if(i === j){
           diagonal1.push(matrix[i][j]);
         }
       }
@@ -145,17 +149,17 @@ function App(props) {
 
     let resultDiagonal1 = countXPlayerWins(diagonal1, player);
     if (resultDiagonal1.status === true && resultDiagonal1.index != undefined) {
-      winner = player;
-      row = resultDiagonal1.index;
-      column = resultDiagonal1.index;
+      winner= player;
+      row= resultDiagonal1.index;
+      column = resultDiagonal1.index;        
     }
 
 
     let diagonal2 = [];
 
-    for (let i = 0; i < 5; i++) {
-      for (let j = 0; j < 5; j++) {
-        if (i === (4 - j)) {
+    for(let i = 0;i <5; i++){
+      for(let j=0;j<5;j++){
+        if(i === (4-j)){
           diagonal2.push(matrix[i][j]);
         }
       }
@@ -163,9 +167,9 @@ function App(props) {
 
     let resultDiagonal2 = countXPlayerWins(diagonal2, player);
     if (resultDiagonal2.status === true && resultDiagonal2.index != undefined) {
-      winner = player;
-      row = resultDiagonal2.index;
-      column = (4 - resultDiagonal2.index);
+      winner= player;
+      row= resultDiagonal2.index;
+      column = (4-resultDiagonal2.index);        
     }
 
     let openSpots = 0;
@@ -180,7 +184,7 @@ function App(props) {
     if (winner == null && openSpots === 0) {
       return "tie";
     } else {
-      return { winner, row, column };
+      return {winner, row, column};
     }
   }
 
@@ -225,20 +229,20 @@ function App(props) {
             found = true;
           } else if (result.winner === humanPlayer && (result.row !== undefined && result.column !== undefined)) {
             //winning conidtion for  'x'
+            move = { i:result.row , j: result.column };
+            found = true;
+            break;
+          } else if((result.winner === 'd1' || result.winner === 'd2') && (result.row !== undefined && result.column !== undefined)){
+            
             move = { i: result.row, j: result.column };
             found = true;
             break;
-          } else if ((result.winner === 'd1' || result.winner === 'd2') && (result.row !== undefined && result.column !== undefined)) {
-
-            move = { i: result.row, j: result.column };
-            found = true;
+            
+          } else          
+          if (!found) {
+            move = { i, j };
             break;
-
-          } else
-            if (!found) {
-              move = { i, j };
-              break;
-            }
+          }
           // if (score > bestScore) {
           //   bestScore = score;
           //   move = { i, j };
@@ -260,7 +264,7 @@ function App(props) {
       resultOPlayer.row !== undefined &&
       resultOPlayer.column !== undefined
     ) {
-      move = { i: resultOPlayer.row, j: resultOPlayer.column };
+      move = { i:resultOPlayer.row , j: resultOPlayer.column };
     }
 
     //let aiBlock = minimax(newMatrix, 0, false);
@@ -273,23 +277,23 @@ function App(props) {
 
   useEffect(() => {
     if (isPlayerMove) {
-      const timeout = setTimeout(() => {
+      const timeout =  setTimeout(() => {
         computerMove();
         const winner = checkGameResult(matrix);
         if (winner === "tie") {
           alert("Draw");
-
+          
           clearTimeout(timeout);
           handleRestart();
-          // clearTimeout(timeout);
+         // clearTimeout(timeout);
         } else if (winner === AIPlayer) {
           alert(AIPlayer + " player won");
-
+          
           clearTimeout(timeout);
           handleRestart();
 
-        } else {
-
+        } else{
+         
         }
       }, 1000);
     }
@@ -297,7 +301,7 @@ function App(props) {
 
   useEffect(() => {
     if (!isPlayerMove && isAISelected) {
-      const timeout = setTimeout(() => {
+     const timeout = setTimeout(() => {
         handleAIvsAI();
       }, 1000);
     }
@@ -342,29 +346,29 @@ function App(props) {
       // if (newMatrix[row][column] !== null) {
       //   alert("select other block");
       // } else {
-      if (matrix[row][column] == null) {
-        matrix[row][column] = "x";
-        setMatrix(matrix);
-      }
-      else {
-        console.log('not null', matrix[row][column]);
-        console.log(newMatrix);
-      }
+        if (matrix[row][column] == null) {
+          matrix[row][column] = "x";
+          setMatrix(matrix);
+        }
+        else {
+          console.log('not null',  matrix[row][column]);
+          console.log(newMatrix);
+        }
 
-      const winner = checkGameResult(matrix);
+        const winner = checkGameResult(matrix);
 
-      if (winner === "tie") {
-        setMark("x");
-        alert("Draw");
-        handleRestart();
-      } else if (winner === "x") {
-        setMark("x");
-        alert("You won");
-        handleRestart();
-      } else {
-        setPlayerMove(true);
-        setMark("x");
-      }
+        if (winner === "tie") {
+          setMark("x");
+          alert("Draw");
+          handleRestart();
+        } else if (winner === "x") {
+          setMark("x");
+          alert("You won");
+          handleRestart();
+        } else {
+          setPlayerMove(true);
+          setMark("x");
+        }
 
       //}
     }
@@ -404,42 +408,43 @@ function App(props) {
       isFound = newMatrix[row][column] == null ? true : false;
       // move = { i:resultXPlayer.row , j: resultXPlayer.column };
     }
-
+  
     console.log(getEmptyBlocks());
 
     var count = 0;
 
-    while (!isFound) {
+    while(!isFound){
       let rowIndex = getRndInteger(0, 4);
       let columnIndex = getRndInteger(0, 4);
       count++;
 
-      if (newMatrix[rowIndex][columnIndex] === null) {
+      if(newMatrix[rowIndex][columnIndex] === null){
         isFound = true;
         row = rowIndex;
         column = columnIndex;
       }
-      if (count > 10000) {
+      if(count > 10000){
         isFound = true;
       }
     }
 
-    if (count > 10000) {
-      for (let i = 0; i < 5; i++) {
-        for (let j = 0; j < 5; j++) {
-          if (matrix[i][j] === null) {
-            row = i;
-            column = j;
-            console.log(i, j);
-          }
+    if(count>10000){
+    for(let i = 0 ; i < 5; i++){
+      for(let j=0; j< 5;j++)
+      {
+        if(matrix[i][j]===null){
+          row=i;
+          column = j;
+          console.log(i, j);
         }
       }
     }
+  }
 
     // console.log('x ', row, column, newMatrix[row][column], isPlayerMove);
     // console.log(newMatrix);
 
-    handleAIvsAIClick(row, column);
+    handleAIvsAIClick(row,column);
   };
 
   function getRndInteger(min, max) {
@@ -450,30 +455,25 @@ function App(props) {
     props.changeTimeoutToggleHandler();
     console.log(props.showchangeTimeoutPopup)
   }
-  
   return (
     <div style={sectionStyle}>
       <div class="container w-80 bg-secondary bg-opacity-25">
         <span class="d-flex justify-content-center">
-          <h1 class="tile title d-flex justify-content-center" id="playText">
+          <h1 class="d-flex justify-content-center" id="playText">
             {!isGameSelected && !isAISelected ? "Super Tic-Tac-Toe Game" : ""}
             {isGameSelected ? "Player vs AI" : isAISelected ? "AI vs AI" : ""}
           </h1>
         </span>
         {(isGameSelected && !isPlayerMove) &&
-          <Timer handleParentFun={handleRestart} />
+          <Timer handleParentFun={handleRestart}/>
         }
-        <h3 class="d-flex justify-content-center" id="playText">
-          {!isGameSelected && !isAISelected ? "Choose any mode" : ""}
-          {isGameSelected ? "Player vs AI" : isAISelected ? "AI vs AI" : ""}
-        </h3>
         <div class="row justify-content-md-center">
           <ButtonToolbar aria-label="Toolbar with button groups">
             <div class="col d-grid justify-content-md-center">
               {isGameSelected || isAISelected ? (
-                <Button id="restart" onClick={handleRestart}>
-                  Restart
-                </Button>
+                  <Button id="restart" onClick={handleRestart}>
+                    Restart
+                  </Button>
               ) : (
                 <ButtonGroup className="mb-2" aria-label="First group">
                   <Button id="AIvAI" onClick={handleAIvsAI}>
@@ -483,11 +483,11 @@ function App(props) {
                     Player vs AI
                   </Button>
                   <Button id="playOnline">Play Online</Button>
-                  <Button onClick={openChangeTimeoutHandler}>Change Timeout</Button>
+                  <Button onClick={openChangeTimeoutHandler}>Change Timer</Button>
                   {
                     props.showchangeTimeoutPopup &&
                     <ChangeTimeout
-                      modalClosed={props.changeTimeoutToggleHandler} />
+                    modalClosed={props.changeTimeoutToggleHandler} />
                   }
                 </ButtonGroup>
               )}
@@ -526,7 +526,7 @@ function App(props) {
                             ? column === "x"
                               ? "X"
                               : "O"
-                            : ""}
+                              : ""}
                         </button>
                       </td>
                     ))}
@@ -539,7 +539,7 @@ function App(props) {
           <AIvsAI matrix={matrix} />
         ) : (
           <div className="start-game">
-
+            <h2>Please select any mode</h2>
           </div>
         )}
         <div class="row d-flex justify-content-center bg-opacity-25 ">
@@ -561,9 +561,5 @@ function App(props) {
     </div>
   );
 }
-
-var sectionStyle = {
-  backgroundImage: `url(${BGImage})`,
-};
-
+ 
 export default ChangeTimeoutPopupHOC(App);
