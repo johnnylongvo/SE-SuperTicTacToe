@@ -26,4 +26,3 @@ const ChangeTimeout = (props) => {
 };
 
 export default ChangeTimeout;
-

@@ -15,6 +15,7 @@ import AIvsAI from "./AIvsAI";
 import ChangeTimeoutPopupHOC from './components/changeTimeout/HOC/changeTimeoutPopupHOC';
 import ChangeTimeout from './components/changeTimeout/changeTimeout';
 import Timer from './components/Timer/Timer';
+import PlayOnline from "./components/playOnline/PlayOnline";
 
 function sleep(milliseconds) {
   const date = Date.now();
@@ -28,6 +29,7 @@ function App(props) {
   const [isGameSelected, setIsGameSelected] = useState(false);
   const [isPlayerMove, setPlayerMove] = useState(false);
   const [isAISelected, setIsAISelected] = useState(false);
+  const [isPlayOnlineSelected, setIsPlayOnlineSelected] = useState(false);
 
   const [mark, setMark] = useState("");
   const [grid, setGrid] = useState(Array.from(Array(25).keys()));
@@ -40,6 +42,8 @@ function App(props) {
     tie: 0,
   };
 
+  const [isAIMove, setAIMove] = useState(false);
+
   const [matrix, setMatrix] = useState([
     [null, null, null, null, null],
     [null, null, null, null, null],
@@ -47,6 +51,21 @@ function App(props) {
     [null, null, null, null, null],
     [null, null, null, null, null],
   ]);
+
+  const winningConditions = [
+    [0, 1, 2, 3, 4],
+    [5, 6, 7, 8, 9],
+    [10, 11, 12, 13, 14],
+    [15, 16, 17, 18, 19],
+    [20, 21, 22, 23, 24],
+    [0, 5, 10, 15, 20],
+    [1, 6, 11, 16, 21],
+    [2, 7, 12, 17, 22],
+    [3, 8, 13, 18, 23],
+    [4, 9, 14, 19, 24],
+    [0, 6, 12, 18, 24],
+    [4, 8, 12, 16, 20],
+  ];
 
   const checkGameResult = (matrix) => {
     let winner = null;
@@ -77,6 +96,24 @@ function App(props) {
       }
     }
 
+    const diagonal1 = [];
+    for (let i = 0; i < matrix.length; i++)
+        diagonal1.push(matrix[i][i]); 
+    if (diagonal1.every((value) => value && value === "o")) {
+      return (winner = "o"); //return [true, false];
+    } else if (diagonal1.every((value) => value && value === "x")) {
+      return (winner = "x"); //return [false, true];
+    }
+
+    const diagonal2 = [];
+    for (let i = 0, j=matrix.length -1; i < matrix.length; i++,j--)
+        diagonal2.push(matrix[i][j]);
+         
+    if (diagonal2.every((value) => value && value === "o")) {
+      return (winner = "o"); //return [true, false];
+    } else if (diagonal2.every((value) => value && value === "x")) {
+      return (winner = "x"); //return [false, true];
+    }
     if (matrix.every((x) => x.every((z) => z !== null))) {
       return (winner = "tie"); //return [true, true];
     }
@@ -370,7 +407,7 @@ function App(props) {
           setMark("x");
         }
 
-      //}
+        //}
     }
   };
 
@@ -378,8 +415,13 @@ function App(props) {
     setIsGameSelected(true);
   };
 
+  const handlePlayOnline = () => {
+    setIsPlayOnlineSelected(true);
+  };
+
   const handleRestart = () => {
     setIsGameSelected(false);
+    setIsPlayOnlineSelected(false);
     setIsAISelected(false);
     setMatrix([
       [null, null, null, null, null],
@@ -408,7 +450,8 @@ function App(props) {
       isFound = newMatrix[row][column] == null ? true : false;
       // move = { i:resultXPlayer.row , j: resultXPlayer.column };
     }
-  
+    
+
     console.log(getEmptyBlocks());
 
     var count = 0;
@@ -470,7 +513,7 @@ function App(props) {
         <div class="row justify-content-md-center">
           <ButtonToolbar aria-label="Toolbar with button groups">
             <div class="col d-grid justify-content-md-center">
-              {isGameSelected || isAISelected ? (
+            {(isGameSelected || isAISelected || isPlayOnlineSelected)? (
                   <Button id="restart" onClick={handleRestart}>
                     Restart
                   </Button>
@@ -482,7 +525,7 @@ function App(props) {
                   <Button id="playAI" onClick={handlePlayAI}>
                     Player vs AI
                   </Button>
-                  <Button id="playOnline">Play Online</Button>
+                  <Button id="playOnline" onClick={handlePlayOnline}>Play Online</Button>
                   <Button onClick={openChangeTimeoutHandler}>Change Timer</Button>
                   {
                     props.showchangeTimeoutPopup &&
@@ -494,6 +537,10 @@ function App(props) {
             </div>
           </ButtonToolbar>
         </div>
+        {
+          isPlayOnlineSelected &&
+          <PlayOnline onRestart={handleRestart} />
+        }
         {isGameSelected ? (
           <div class="row d-flex justify-content-center">
             <table class="table">
@@ -526,7 +573,7 @@ function App(props) {
                             ? column === "x"
                               ? "X"
                               : "O"
-                              : ""}
+                            : ""}
                         </button>
                       </td>
                     ))}
