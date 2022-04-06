@@ -36,10 +36,10 @@ export function JoinRoom(props) {
   return (
     <form onSubmit={joinRoom}>
       <div className="JoinRoomContainer">
-        <h4>Enter Room ID : </h4>
+        <h4>Enter Any ID : </h4>
         <input
         className="RoomIdInput"
-          placeholder="Enter Room ID"
+          placeholder="Enter any ID"
           value={roomValue}
           onChange={handleRoomValueChange}
         />

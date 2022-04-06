@@ -256,7 +256,7 @@ export function Game(props) {
                     ) : (
                       "O"
                     )
-                  ) : outerIndex * 5 + innerIndex}
+                  ) : ""}
                 </button>
                 </td>
               ))}
@@ -265,8 +265,6 @@ export function Game(props) {
             </tbody>
             </table>
             </div>
-      {result.length ? <button onClick={clickHandler} className="StartBtn" >Start New Game</button> : 
-      null}
     </div>
   );
 }

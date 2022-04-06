@@ -500,7 +500,7 @@ function App(props) {
   }
   return (
     <div style={sectionStyle}>
-      <div class="container w-80 bg-secondary bg-opacity-25">
+      <div class="container w-80 bg-secondary bg-opacity-25 overflow-auto vh-100">
         <span class="d-flex justify-content-center">
           <h1 class="d-flex justify-content-center" id="playText">
             {!isGameSelected && !isAISelected ? "Super Tic-Tac-Toe Game" : ""}
@@ -509,6 +509,10 @@ function App(props) {
         </span>
         {(isGameSelected && !isPlayerMove) &&
           <Timer handleParentFun={handleRestart}/>
+        }
+         {
+          isPlayOnlineSelected &&
+          <PlayOnline onRestart={handleRestart} />
         }
         <div class="row justify-content-md-center">
           <ButtonToolbar aria-label="Toolbar with button groups">
@@ -537,10 +541,7 @@ function App(props) {
             </div>
           </ButtonToolbar>
         </div>
-        {
-          isPlayOnlineSelected &&
-          <PlayOnline onRestart={handleRestart} />
-        }
+       
         {isGameSelected ? (
           <div class="row d-flex justify-content-center">
             <table class="table">
@@ -585,7 +586,7 @@ function App(props) {
         ) : isAISelected ? (
           <AIvsAI matrix={matrix} />
         ) : (
-          <div className="start-game">
+          <div className="start-game mt-2">
             <h2>Please select any mode</h2>
           </div>
         )}
