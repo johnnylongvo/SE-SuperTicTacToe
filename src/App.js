@@ -16,6 +16,14 @@ import ChangeTimeoutPopupHOC from './components/changeTimeout/HOC/changeTimeoutP
 import ChangeTimeout from './components/changeTimeout/changeTimeout';
 import Timer from './components/Timer/Timer';
 
+function sleep(milliseconds) {
+  const date = Date.now();
+  let currentDate = null;
+  do {
+    currentDate = Date.now();
+  } while (currentDate - date < milliseconds);
+}
+
 function App(props) { 
   const [isGameSelected, setIsGameSelected] = useState(false);
   const [isAISelected, setIsAISelected] = useState(false);
@@ -32,7 +40,6 @@ function App(props) {
   };
 
   const [isPlayerMove, setPlayerMove] = useState(false);
-  const [isAIMove, setAIMove] = useState(false);
 
   const [matrix, setMatrix] = useState([
     [null, null, null, null, null],
@@ -41,21 +48,6 @@ function App(props) {
     [null, null, null, null, null],
     [null, null, null, null, null],
   ]);
-
-  const winningConditions = [
-    [0, 1, 2, 3, 4],
-    [5, 6, 7, 8, 9],
-    [10, 11, 12, 13, 14],
-    [15, 16, 17, 18, 19],
-    [20, 21, 22, 23, 24],
-    [0, 5, 10, 15, 20],
-    [1, 6, 11, 16, 21],
-    [2, 7, 12, 17, 22],
-    [3, 8, 13, 18, 23],
-    [4, 9, 14, 19, 24],
-    [0, 6, 12, 18, 24],
-    [4, 8, 12, 16, 20],
-  ];
 
   const checkGameResult = (matrix) => {
     let winner = null;
@@ -85,35 +77,6 @@ function App(props) {
         return (winner = "x"); //return [false, true];
       }
     }
-
-    console.log(matrix);
-
-    // let y = 0;
-    // for (let i = 0; i < 5; i++) {
-    //   for (let j = 0; j < 5; j++) {
-    //     if (matrix[i][j] != null) {
-    //       let tempGrid = [...grid];
-    //       tempGrid[y]= matrix[i][j];
-    //       setGrid(tempGrid);
-    //     }
-    //   }
-    // }
-
-    // console.log(grid);
-
-    // for (let i = 0; i < winningConditions.length; i++) {
-    //   const [a, b, c, d, e] = winningConditions[i];
-    //   if (
-    //     grid[a] &&
-    //     grid[a] === grid[b] &&
-    //     grid[a] === grid[c] &&
-    //     grid[a] === grid[d] &&
-    //     grid[a] === grid[e]
-    //   ) {
-    //     if (grid[a] === "o") return [true, false];
-    //     else return [false, true];
-    //   }
-    // }
 
     if (matrix.every((x) => x.every((z) => z !== null))) {
       return (winner = "tie"); //return [true, true];
@@ -243,44 +206,6 @@ function App(props) {
 
   const arrayColumn = (arr, n) => arr.map((x) => x[n]);
 
-  // function checkOMoves(board) {
-  //   let x, y, k, l;
-
-  //   let horizontalMove = 0;
-  //   let verticalMove = 0;
-
-  //   // vertical
-  //   for (let i = 0; i < 5; i++) {
-  //     let arr = arrayColumn(board, i);
-  //     let count = countDuplicate(arr);
-
-  //     if (count[0] > verticalMove) {
-  //       verticalMove = count[0];
-  //       x = i;
-  //       y = count[1];
-  //     }
-  //   }
-
-  //   //horizontal
-  //   for (let i = 0; i < 5; i++) {
-  //     let count = countDuplicate(board[i]);
-  //     if (count[0] > horizontalMove) {
-  //       horizontalMove = count[0];
-  //       k = i;
-  //       l = count[1];
-  //     }
-  //   }
-
-  //   if (horizontalMove > verticalMove) {
-  //     return [k, l];
-  //   } else if (horizontalMove < verticalMove) {
-  //     return [x, y];
-  //   } else if (horizontalMove === verticalMove) {
-  //     return [k, l];
-  //   } else {
-  //     return [-1, -1];
-  //   }
-  // }
 
   const computerMove = () => {
     const newMatrix = _.cloneDeep(matrix);
@@ -347,19 +272,38 @@ function App(props) {
 
     matrix[move.i][move.j] = AIPlayer;
     setMatrix(matrix);
+    sleep(5000);
     setPlayerMove(false);
   };
 
   useEffect(() => {
     if (isPlayerMove) {
-      setTimeout(() => {
+      const timeout =  setTimeout(() => {
         computerMove();
         const winner = checkGameResult(matrix);
         if (winner === "tie") {
           alert("Draw");
+          
+          clearTimeout(timeout);
+          handleRestart();
+         // clearTimeout(timeout);
         } else if (winner === AIPlayer) {
-          alert("AI won");
+          alert(AIPlayer + " player won");
+          
+          clearTimeout(timeout);
+          handleRestart();
+
+        } else{
+         
         }
+      }, 1000);
+    }
+  }, [isPlayerMove]);
+
+  useEffect(() => {
+    if (!isPlayerMove && isAISelected) {
+     const timeout = setTimeout(() => {
+        handleAIvsAI();
       }, 1000);
     }
   }, [isPlayerMove]);
@@ -371,7 +315,7 @@ function App(props) {
       const newMatrix = [...matrix];
       const { id: blockId } = e.target;
 
-      if (typeof grid[blockId] !== "number") {
+      if (newMatrix[row][column] !== null) {
         alert("select other block");
       } else {
         if (newMatrix[row][column] == null) {
@@ -396,6 +340,41 @@ function App(props) {
     }
   };
 
+  const handleAIvsAIClick = (row, column) => {
+    if (!isPlayerMove) {
+      const newMatrix = [...matrix];
+
+      // if (newMatrix[row][column] !== null) {
+      //   alert("select other block");
+      // } else {
+        if (matrix[row][column] == null) {
+          matrix[row][column] = "x";
+          setMatrix(matrix);
+        }
+        else {
+          console.log('not null',  matrix[row][column]);
+          console.log(newMatrix);
+        }
+
+        const winner = checkGameResult(matrix);
+
+        if (winner === "tie") {
+          setMark("x");
+          alert("Draw");
+          handleRestart();
+        } else if (winner === "x") {
+          setMark("x");
+          alert("You won");
+          handleRestart();
+        } else {
+          setPlayerMove(true);
+          setMark("x");
+        }
+
+      //}
+    }
+  };
+
   const handlePlayAI = () => {
     setIsGameSelected(true);
   };
@@ -414,7 +393,65 @@ function App(props) {
 
   const handleAIvsAI = () => {
     setIsAISelected(true);
+    const newMatrix = [...matrix];
+    let resultXPlayer = checkWinner(newMatrix, AIPlayer);
+    let row, column;
+    let isFound = false;
+
+    if (
+      resultXPlayer.row !== null &&
+      resultXPlayer.column !== null &&
+      resultXPlayer.row !== undefined &&
+      resultXPlayer.column !== undefined
+    ) {
+      column = resultXPlayer.row;
+      row = resultXPlayer.column;
+      isFound = newMatrix[row][column] == null ? true : false;
+      // move = { i:resultXPlayer.row , j: resultXPlayer.column };
+    }
+  
+    console.log(getEmptyBlocks());
+
+    var count = 0;
+
+    while(!isFound){
+      let rowIndex = getRndInteger(0, 4);
+      let columnIndex = getRndInteger(0, 4);
+      count++;
+
+      if(newMatrix[rowIndex][columnIndex] === null){
+        isFound = true;
+        row = rowIndex;
+        column = columnIndex;
+      }
+      if(count > 10000){
+        isFound = true;
+      }
+    }
+
+    if(count>10000){
+    for(let i = 0 ; i < 5; i++){
+      for(let j=0; j< 5;j++)
+      {
+        if(matrix[i][j]===null){
+          row=i;
+          column = j;
+          console.log(i, j);
+        }
+      }
+    }
+  }
+
+    // console.log('x ', row, column, newMatrix[row][column], isPlayerMove);
+    // console.log(newMatrix);
+
+    handleAIvsAIClick(row,column);
   };
+
+  function getRndInteger(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+  }
+
   const openChangeTimeoutHandler = () => {
     props.changeTimeoutToggleHandler();
     console.log(props.showchangeTimeoutPopup)
@@ -428,7 +465,7 @@ function App(props) {
             {isGameSelected ? "Player vs AI" : isAISelected ? "AI vs AI" : ""}
           </h1>
         </span>
-        {(isGameSelected || isAISelected) &&
+        {(isGameSelected && !isPlayerMove) &&
           <Timer handleParentFun={handleRestart}/>
         }
         <div class="row justify-content-md-center">
@@ -479,18 +516,18 @@ function App(props) {
                         key={innerIndex}
                       >
                         <button
-                          class="cell btn btn-secondary"
+                          className={`cell btn btn-secondary`}
                           id={outerIndex * 5 + innerIndex}
                           onClick={(e) =>
                             handleClick(e, innerIndex, outerIndex)
                           }
                         >
-                          {/* {outerIndex * 5 + innerIndex} */}
+                          {""}
                           {column && column !== null
                             ? column === "x"
                               ? "X"
                               : "O"
-                            : outerIndex * 5 + innerIndex}
+                              : ""}
                         </button>
                       </td>
                     ))}
@@ -513,16 +550,10 @@ function App(props) {
           >
             <ListGroup class="font-weight-bold" variant="flush">
               <ListGroup.Item class="font-weight-bold">
-                Player Moving --{" "}
-              </ListGroup.Item>
-              <ListGroup.Item class="font-weight-bold">
-                Time Remaining for Move --
+                Player Moving --
               </ListGroup.Item>
               <ListGroup.Item class="font-weight-bold">
                 Total Game Time --
-              </ListGroup.Item>
-              <ListGroup.Item class="font-weight-bold">
-                Clicked Button:{" "}
               </ListGroup.Item>
             </ListGroup>
           </Card>
