@@ -1,9 +1,10 @@
-.timer{
+.timer {
     font-Size: 48px !important;
     width: 153px;
     height: 89px;
     border-radius: 50px;
     float: right !important;
+    color: red;
 }
 .flex-container {
     width:100%;
@@ -16,6 +17,10 @@
     justify-self: self-end;
     align-self: center;
     
+  }
+
+  .title {
+    color: blue;
   }
   /* .flex-container > a {
     grid-column: 1 / span 7;

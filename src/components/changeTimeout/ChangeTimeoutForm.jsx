@@ -14,14 +14,14 @@ const ChangeTimeoutForm = (props) => {
     <>
       <Modal className="device-pop-up" show={true} centered onHide={props.onModalClosed}>
         <Modal.Header closeButton>
-          <Modal.Title>
+          <Modal.Title class="modal-title title">
           Change Move Time Limit
             </Modal.Title> 
         </Modal.Header>
           <Form id="timeout-form" onSubmit={handle}>
           <Modal.Body>
         <Form.Group>
-          <Form.Label>Time Limit Per Move:</Form.Label>
+          <Form.Label  class="title">Time Limit Per Move:</Form.Label>
           <Form.Control
             type="number"
             id="timeOutMinutes"
