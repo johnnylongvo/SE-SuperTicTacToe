@@ -4,7 +4,7 @@
     height: 89px;
     border-radius: 50px;
     float: right !important;
-    color: red;
+    color: #0d6efd;
 }
 .flex-container {
     width:100%;
@@ -25,3 +25,8 @@
   /* .flex-container > a {
     grid-column: 1 / span 7;
   } */
+
+  .time-container{
+    position: relative;
+    width: 17rem;
+  }

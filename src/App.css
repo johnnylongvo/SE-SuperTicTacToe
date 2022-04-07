@@ -205,3 +205,9 @@ margin-top: 2em;
     transform: rotate(360deg);
   }
 }
+
+.heading{
+  position: relative;
+  width: 42rem;
+  top: 11px;
+}

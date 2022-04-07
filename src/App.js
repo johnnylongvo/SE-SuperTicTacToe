@@ -30,6 +30,7 @@ function App(props) {
   const [isPlayerMove, setPlayerMove] = useState(false);
   const [isAISelected, setIsAISelected] = useState(false);
   const [isPlayOnlineSelected, setIsPlayOnlineSelected] = useState(false);
+  const [isRestart, setIsRestart] = useState(false);
 
   const [mark, setMark] = useState("");
   const [grid, setGrid] = useState(Array.from(Array(25).keys()));
@@ -313,7 +314,7 @@ function App(props) {
   };
 
   useEffect(() => {
-    if (isPlayerMove) {
+    if (isPlayerMove || isRestart) {
       const timeout =  setTimeout(() => {
         computerMove();
         const winner = checkGameResult(matrix);
@@ -333,16 +334,18 @@ function App(props) {
          
         }
       }, 1000);
+      if(isRestart) clearTimeout(timeout);
     }
-  }, [isPlayerMove]);
+  }, [isPlayerMove, isRestart]);
 
   useEffect(() => {
-    if (!isPlayerMove && isAISelected) {
+    if ((!isPlayerMove && isAISelected) || isRestart) {
      const timeout = setTimeout(() => {
         handleAIvsAI();
       }, 1000);
+      if(isRestart) clearTimeout(timeout);
     }
-  }, [isPlayerMove]);
+  }, [isPlayerMove, isRestart]);
 
   const getEmptyBlocks = () => grid.filter((item) => typeof item === "number");
 
@@ -420,6 +423,7 @@ function App(props) {
   };
 
   const handleRestart = () => {
+    setIsRestart(true);
     setIsGameSelected(false);
     setIsPlayOnlineSelected(false);
     setIsAISelected(false);
@@ -433,7 +437,8 @@ function App(props) {
   };
 
   const handleAIvsAI = () => {
-    setIsAISelected(true);
+    if(!isRestart){
+      setIsAISelected(true);
     const newMatrix = [...matrix];
     let resultXPlayer = checkWinner(newMatrix, AIPlayer);
     let row, column;
@@ -450,10 +455,7 @@ function App(props) {
       isFound = newMatrix[row][column] == null ? true : false;
       // move = { i:resultXPlayer.row , j: resultXPlayer.column };
     }
-    
-
-    console.log(getEmptyBlocks());
-
+  
     var count = 0;
 
     while(!isFound){
@@ -482,12 +484,16 @@ function App(props) {
         }
       }
     }
+ 
   }
 
     // console.log('x ', row, column, newMatrix[row][column], isPlayerMove);
     // console.log(newMatrix);
 
     handleAIvsAIClick(row,column);
+  } else{
+    handleRestart();
+  }
   };
 
   function getRndInteger(min, max) {
@@ -501,15 +507,32 @@ function App(props) {
   return (
     <div style={sectionStyle}>
       <div class="container w-80 bg-secondary bg-opacity-25 overflow-auto vh-100">
-        <span class="d-flex justify-content-center">
+      <div class="row d-flex bg-opacity-25 m-2">
+          <Card
+            class="bg-opacity-25 bg-dark font-weight-bold "
+            style={{ width: "18rem" }}
+          >
+            <ListGroup class="font-weight-bold" variant="flush">
+              <ListGroup.Item class="font-weight-bold">
+                Player Moving --
+              </ListGroup.Item>
+              <ListGroup.Item class="font-weight-bold">
+                Total Game Time --
+              </ListGroup.Item>
+            </ListGroup>
+          </Card>
+          <span class="d-flex justify-content-center heading">
           <h1 class="d-flex justify-content-center" id="playText">
             {!isGameSelected && !isAISelected ? "Super Tic-Tac-Toe Game" : ""}
             {isGameSelected ? "Player vs AI" : isAISelected ? "AI vs AI" : ""}
           </h1>
         </span>
-        {(isGameSelected && !isPlayerMove) &&
+        {(isGameSelected) &&
           <Timer handleParentFun={handleRestart}/>
         }
+        </div>
+        
+       
          {
           isPlayOnlineSelected &&
           <PlayOnline onRestart={handleRestart} />
@@ -518,7 +541,7 @@ function App(props) {
           <ButtonToolbar aria-label="Toolbar with button groups">
             <div class="col d-grid justify-content-md-center">
             {(isGameSelected || isAISelected || isPlayOnlineSelected)? (
-                  <Button id="restart" onClick={handleRestart}>
+                  <Button className="mb-2"  id="restart" onClick={handleRestart}>
                     Restart
                   </Button>
               ) : (
@@ -590,21 +613,7 @@ function App(props) {
             <h2>Please select any mode</h2>
           </div>
         )}
-        <div class="row d-flex justify-content-center bg-opacity-25 ">
-          <Card
-            class="bg-opacity-25 bg-dark font-weight-bold "
-            style={{ width: "18rem" }}
-          >
-            <ListGroup class="font-weight-bold" variant="flush">
-              <ListGroup.Item class="font-weight-bold">
-                Player Moving --
-              </ListGroup.Item>
-              <ListGroup.Item class="font-weight-bold">
-                Total Game Time --
-              </ListGroup.Item>
-            </ListGroup>
-          </Card>
-        </div>
+        
       </div>
     </div>
   );

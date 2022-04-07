@@ -40,7 +40,7 @@ const Timer = (props) => {
     return(
         <>
             { timerFlag &&
-            <div className="d-flex justify-content-center mb-2">
+            <div className="time-container">
                 <button type="button" className="timer">{timerState.m+":"+timerState.s}</button>
             </div> 
             }
