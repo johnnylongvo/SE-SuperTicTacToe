@@ -6,7 +6,6 @@ import { Game } from "../game";
 
 
 function PlayOnline(props) {
-  debugger
   const [isInRoom, setInRoom] = useState(false);
   const [playerSymbol, setPlayerSymbol] = useState("x");
   const [isPlayerTurn, setPlayerTurn] = useState(false);
@@ -38,8 +37,8 @@ function PlayOnline(props) {
   return (
     <GameContext.Provider value={gameContextValue}>
       <div className="mt-2">
-          {!isInRoom && <JoinRoom />}
-          {isInRoom && <Game onRestart={props.handleRestart}/>}
+          {!isInRoom && <JoinRoom onRestart={props.onRestart}/>}
+          {isInRoom && <Game onRestart={props.onRestart}/>}
       </div>
     </GameContext.Provider>
   );

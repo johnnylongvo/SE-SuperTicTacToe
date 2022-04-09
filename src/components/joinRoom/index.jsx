@@ -46,6 +46,9 @@ export function JoinRoom(props) {
         <button className="JoinButton mb-2" type="submit" disabled={isJoin}>
           {isJoin ? "Joining..." : "Join"}
         </button>
+        <button className="btn btn-primary" onClick={props.onRestart}>
+          Restart
+        </button>
       </div>
     </form>
   );

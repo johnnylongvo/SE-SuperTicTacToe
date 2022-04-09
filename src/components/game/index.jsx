@@ -200,10 +200,6 @@ export function Game(props) {
       });
   };
 
-  const clickHandler = () => {
-    window.location.href = "/";
-  }
-
   const handleGameWin = () => {
     if (socketService.socket)
       gameActionService.onWin(socketService.socket, (message) => {
@@ -218,19 +214,42 @@ export function Game(props) {
     handleGameUpdate();
     handleGameStart();
     handleGameWin();
+    handleRestart();
   }, []);
+
+  const handleRestart = () =>{
+    if(socketService.socket)
+    {
+      gameActionService.onRestart(socketService.socket, (message) =>{
+        props.onRestart();
+      })
+    }
+  }
 
   useEffect(() => {
     if (isPlayerTurn)
       setTimeout(() => {
         computerMove();
       }, 1000);
-  }, [isPlayerTurn]); 
+  }, [isPlayerTurn]);
+  
+  const buttonHandler = ()=>{
+    if(socketService.socket)
+    {
+      gameActionService.restart(socketService.socket,true);
+      props.onRestart();
+    }
+  }
   return (
     <div class="container w-80 bg-opacity-25">
       {!isGameStarted ? (
         <h2>Waiting for Other Player to Join to Start the Game!</h2>
-      ):<Timer/>}
+      ):
+      <>
+      {/* <Timer/> */}
+      <button onClick={buttonHandler} className="btn btn-primary">Restart</button>
+      </>
+      }
       {(!isGameStarted || !isPlayerTurn) && <div className="PlayStopper" />}
       {result.length ? <h1>{result}</h1> : null}
       <div class="row d-flex justify-content-center">

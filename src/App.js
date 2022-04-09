@@ -30,7 +30,8 @@ function App(props) {
   const [isPlayerMove, setPlayerMove] = useState(false);
   const [isAISelected, setIsAISelected] = useState(false);
   const [isPlayOnlineSelected, setIsPlayOnlineSelected] = useState(false);
-  const [isRestart, setIsRestart] = useState(false);
+  let timeout;
+  // const [isRestart, setIsRestart] = useState(false);
 
   const [mark, setMark] = useState("");
   const [grid, setGrid] = useState(Array.from(Array(25).keys()));
@@ -309,12 +310,12 @@ function App(props) {
 
     matrix[move.i][move.j] = AIPlayer;
     setMatrix(matrix);
-    sleep(5000);
+    // sleep(5000);
     setPlayerMove(false);
   };
 
   useEffect(() => {
-    if (isPlayerMove || isRestart) {
+    if (isPlayerMove ) {
       const timeout =  setTimeout(() => {
         computerMove();
         const winner = checkGameResult(matrix);
@@ -334,18 +335,16 @@ function App(props) {
          
         }
       }, 1000);
-      if(isRestart) clearTimeout(timeout);
     }
-  }, [isPlayerMove, isRestart]);
+  }, [isPlayerMove]);
 
   useEffect(() => {
-    if ((!isPlayerMove && isAISelected) || isRestart) {
-     const timeout = setTimeout(() => {
+    if (!isPlayerMove && isAISelected) {
+      timeout = setTimeout(() => {
         handleAIvsAI();
       }, 1000);
-      if(isRestart) clearTimeout(timeout);
     }
-  }, [isPlayerMove, isRestart]);
+  }, [isPlayerMove]);
 
   const getEmptyBlocks = () => grid.filter((item) => typeof item === "number");
 
@@ -423,10 +422,12 @@ function App(props) {
   };
 
   const handleRestart = () => {
-    setIsRestart(true);
+    // setIsRestart(true);
     setIsGameSelected(false);
     setIsPlayOnlineSelected(false);
     setIsAISelected(false);
+    clearTimeout(timeout);
+    setPlayerMove(false)
     setMatrix([
       [null, null, null, null, null],
       [null, null, null, null, null],
@@ -437,7 +438,6 @@ function App(props) {
   };
 
   const handleAIvsAI = () => {
-    if(!isRestart){
       setIsAISelected(true);
     const newMatrix = [...matrix];
     let resultXPlayer = checkWinner(newMatrix, AIPlayer);
@@ -491,9 +491,7 @@ function App(props) {
     // console.log(newMatrix);
 
     handleAIvsAIClick(row,column);
-  } else{
-    handleRestart();
-  }
+   
   };
 
   function getRndInteger(min, max) {
@@ -540,11 +538,11 @@ function App(props) {
         <div class="row justify-content-md-center">
           <ButtonToolbar aria-label="Toolbar with button groups">
             <div class="col d-grid justify-content-md-center">
-            {(isGameSelected || isAISelected || isPlayOnlineSelected)? (
+            {(isGameSelected || isAISelected )? (
                   <Button className="mb-2"  id="restart" onClick={handleRestart}>
                     Restart
                   </Button>
-              ) : (
+              ) : ( !isPlayOnlineSelected &&
                 <ButtonGroup className="mb-2" aria-label="First group">
                   <Button id="AIvAI" onClick={handleAIvsAI}>
                     Watch AI Play

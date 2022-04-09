@@ -37,4 +37,18 @@ export class controllerForGame {
     const gameRoom = this.get_socketForGameRoom(s);
     s.to(gameRoom).emit("win", sendM);
   }
+  
+  @OnMessage("Restart game")
+  public async restart(
+    @SocketIO() io: Server,
+    @ConnectedSocket() s: Socket,
+    @MessageBody() sendRFlag: any
+  ) {
+    // console.log("socket>>>>",s,"io>>>>",io)
+    const gameRoom = this.get_socketForGameRoom(s);
+    console.log("Message room flag>>>>",sendRFlag)
+    s.to(gameRoom).emit("restart", sendRFlag);
+    io.in(gameRoom).socketsLeave(gameRoom);
+    console.log("game room flag>>>>",gameRoom)
+  }
 }

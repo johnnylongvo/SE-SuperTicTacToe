@@ -32,6 +32,17 @@
   async onWin(socket, listiner) {
     socket.on("win", ({ message }) => listiner(message));
   }
+  async restart(socket, restartFlag) {
+    socket.emit("Restart game", { restartFlag });
+  }
+
+  async onRestart(socket, listiner) {
+    socket.on("restart", ({ restartFlag }) => {
+      debugger
+      console.log("restartFlag>>>>>>>>",restartFlag)
+      return listiner(restartFlag)
+    });
+  }
 }
 
 export default new GameActionService();
