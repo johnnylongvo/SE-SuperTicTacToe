@@ -3,6 +3,7 @@ import gameContext from "../../Context/gameContext";
 import gameActionService from "../../services/gameActionService";
 import socketService from "../../services/socketService"; 
 import Timer from "../Timer/Timer"; 
+import _ from "lodash";
 // export type IPlayMatrix = Array<Array<string | null>>;
 // export interface IStartGame {
 //   start: boolean;
@@ -11,6 +12,8 @@ import Timer from "../Timer/Timer";
 
 export function Game(props) {
   const [mark, setMark] = useState('');
+  const humanPlayer = "x";
+  const AIPlayer = "o";
 
   const [matrix, setMatrix] = useState([
     [null, null, null, null, null],
@@ -106,46 +109,99 @@ export function Game(props) {
   //     computerMove();
   // }, 5000);
 
+  // const computerMove = () => {
+  //   const newMatrix = [...matrix];
+  //   let col = 0, row = 0;
+
+  //   let found = false;
+  //   newMatrix.forEach(function (cell, rowIndex) {
+  //     cell.forEach((item, colIndex) => {
+  //       if (item == null) {
+  //         col = colIndex;
+  //         row = rowIndex;
+  //         found = true;
+  //         return;
+  //       } else {
+  //         //allFilled = true;
+  //       }
+  //     });
+
+  //     if (found)
+  //       return;
+
+  //   });
+
+  //   if (found && isPlayerTurn) {
+  //     updateGameMatrix(col, row, playerSymbol);
+  //   }
+
+  // }
+
+  
   const computerMove = () => {
-    const newMatrix = [...matrix];
-    // var emptyCells = [];
-    // var random;
-    let col = 0, row = 0;
+    const newMatrix = _.cloneDeep(matrix);
+    let bestScore = -Infinity;
+    let move;
+    let col = 0,
+      row = 0,
+      found = false;
 
-    // /*  for (var i = 0; i < cells.length; i++) {
-    //     if (cells[i].textContent == '') {
-    //       emptyCells.push(cells[i]);
-    //     }
-    //   }*/
+    //check x player is winning or not
+    for (let i = 0; i < 5; i++) {
+      for (let j = 0; j < 5; j++) {
+        // Is the spot available?
+        if (newMatrix[i][j] == null) {
+          newMatrix[i][j] = humanPlayer;
 
-    let found = false;
-    newMatrix.forEach(function (cell, rowIndex) {
-      cell.forEach((item, colIndex) => {
-        if (item == null) {
-          col = colIndex;
-          row = rowIndex;
-          found = true;
-          return;
-        } else {
-          //allFilled = true;
+          let result = props.checkWinner(newMatrix, humanPlayer);
+          newMatrix[i][j] = null;
+          //first case user select any box except middle
+          if (newMatrix[2][2] === null) {
+            move = { i: 2, j: 2 };
+            found = true;
+          } else if (result.winner === humanPlayer && (result.row !== undefined && result.column !== undefined)) {
+            //winning conidtion for  'x'
+            move = { i:result.row , j: result.column };
+            found = true;
+            break;
+          } else if((result.winner === 'd1' || result.winner === 'd2') && (result.row !== undefined && result.column !== undefined)){
+            
+            move = { i: result.row, j: result.column };
+            found = true;
+            break;
+            
+          } else          
+          if (!found) {
+            move = { i, j };
+            break;
+          }
         }
-      });
+      }
 
-      if (found)
-        return;
-
-    });
-
-    // // computer marks a random EMPTY cell
-    // random = Math.ceil(Math.random() * emptyCells.length) - 1;
-    // emptyCells[random].textContent = mark;
-
-    if (found && isPlayerTurn) {
-      updateGameMatrix(col, row, playerSymbol);
-      //switchMove('o');
+      if (found) break;
     }
 
-  }
+    //check best positon of 'o'
+    let resultOPlayer = props.checkWinner(newMatrix, AIPlayer);
+
+    if (
+      !found &&
+      resultOPlayer.row !== null &&
+      resultOPlayer.column !== null &&
+      resultOPlayer.row !== undefined &&
+      resultOPlayer.column !== undefined
+    ) {
+      move = { i:resultOPlayer.row , j: resultOPlayer.column };
+    }
+
+    //let aiBlock = minimax(newMatrix, 0, false);
+
+    //matrix[move.i][move.j] = AIPlayer;
+    //setMatrix(matrix);
+    // sleep(5000);
+    updateGameMatrix(move.i, move.j, playerSymbol);
+    //setPlayerMove(false);
+  };
 
   const updateGameMatrix = (column, row, symbol) => {
     const newMatrix = [...matrix];
@@ -241,7 +297,7 @@ export function Game(props) {
     }
   }
   return (
-    <div class="container w-80 bg-opacity-25">
+    <div className="container w-80 bg-opacity-25">
       {!isGameStarted ? (
         <h2>Waiting for Other Player to Join to Start the Game!</h2>
       ):
@@ -252,14 +308,14 @@ export function Game(props) {
       }
       {(!isGameStarted || !isPlayerTurn) && <div className="PlayStopper" />}
       {result.length ? <h1>{result}</h1> : null}
-      <div class="row d-flex justify-content-center">
-            <table class="table">
+      <div className="row d-flex justify-content-center">
+            <table className="table">
               <tbody>
         {matrix.map((row, outerIndex) => (
           <tr key={outerIndex}>
               {row.map((column, innerIndex) => (
                 <td
-                class="text-center border-2 border-dark border-rounded"
+                className="text-center border-2 border-dark border-rounded"
                 key={innerIndex}
               >
                 <button

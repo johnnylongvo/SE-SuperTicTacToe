@@ -38,7 +38,7 @@ function PlayOnline(props) {
     <GameContext.Provider value={gameContextValue}>
       <div className="mt-2">
           {!isInRoom && <JoinRoom onRestart={props.onRestart}/>}
-          {isInRoom && <Game onRestart={props.onRestart}/>}
+          {isInRoom && <Game onRestart={props.onRestart} checkResult={props.checkResult} checkWinner={props.checkWinner}/>}
       </div>
     </GameContext.Provider>
   );

@@ -504,23 +504,23 @@ function App(props) {
   }
   return (
     <div style={sectionStyle}>
-      <div class="container w-80 bg-secondary bg-opacity-25 overflow-auto vh-100">
-      <div class="row d-flex bg-opacity-25 m-2">
+      <div className="container w-80 bg-secondary bg-opacity-25 overflow-auto vh-100">
+      <div className="row d-flex bg-opacity-25 m-2">
           <Card
-            class="bg-opacity-25 bg-dark font-weight-bold "
+            className="bg-opacity-25 bg-dark font-weight-bold "
             style={{ width: "18rem" }}
           >
-            <ListGroup class="font-weight-bold" variant="flush">
-              <ListGroup.Item class="font-weight-bold">
+            <ListGroup className="font-weight-bold" variant="flush">
+              <ListGroup.Item className="font-weight-bold">
                 Player Moving --
               </ListGroup.Item>
-              <ListGroup.Item class="font-weight-bold">
+              <ListGroup.Item className="font-weight-bold">
                 Total Game Time --
               </ListGroup.Item>
             </ListGroup>
           </Card>
-          <span class="d-flex justify-content-center heading">
-          <h1 class="d-flex justify-content-center" id="playText">
+          <span className="d-flex justify-content-center heading">
+          <h1 className="d-flex justify-content-center" id="playText">
             {!isGameSelected && !isAISelected ? "Super Tic-Tac-Toe Game" : ""}
             {isGameSelected ? "Player vs AI" : isAISelected ? "AI vs AI" : ""}
           </h1>
@@ -533,11 +533,11 @@ function App(props) {
        
          {
           isPlayOnlineSelected &&
-          <PlayOnline onRestart={handleRestart} />
+          <PlayOnline onRestart={handleRestart} checkResult={checkGameResult} checkWinner={checkWinner}/>
         }
-        <div class="row justify-content-md-center">
+        <div className="row justify-content-md-center">
           <ButtonToolbar aria-label="Toolbar with button groups">
-            <div class="col d-grid justify-content-md-center">
+            <div className="col d-grid justify-content-md-center">
             {(isGameSelected || isAISelected )? (
                   <Button className="mb-2"  id="restart" onClick={handleRestart}>
                     Restart
@@ -564,7 +564,7 @@ function App(props) {
         </div>
        
         {isGameSelected ? (
-          <div class="row d-flex justify-content-center">
+          <div className="row d-flex justify-content-center">
             <table class="table">
               <tbody>
                 {/* {Array.from({ length: 5}).map((_, outerIndex) => (
