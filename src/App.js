@@ -29,6 +29,7 @@ function App(props) {
   const [isGameSelected, setIsGameSelected] = useState(false);
   const [isPlayerMove, setPlayerMove] = useState(false);
   const [isAISelected, setIsAISelected] = useState(false);
+  const [isAIMove, setAIMove] = useState(false);
   const [isPlayOnlineSelected, setIsPlayOnlineSelected] = useState(false);
 
   const [mark, setMark] = useState("");
@@ -42,7 +43,6 @@ function App(props) {
     tie: 0,
   };
 
-  const [isAIMove, setAIMove] = useState(false);
 
   const [matrix, setMatrix] = useState([
     [null, null, null, null, null],
@@ -118,10 +118,6 @@ function App(props) {
       return (winner = "tie"); //return [true, true];
     }
     return winner; // return [false, false];
-  };
-
-  var sectionStyle = {
-    backgroundImage: `url(${BGImage})`,
   };
 
   const countXPlayerWins = (row, player)=>{
@@ -242,7 +238,6 @@ function App(props) {
 
   const arrayColumn = (arr, n) => arr.map((x) => x[n]);
 
-
   const computerMove = () => {
     const newMatrix = _.cloneDeep(matrix);
     let bestScore = -Infinity;
@@ -280,11 +275,6 @@ function App(props) {
             move = { i, j };
             break;
           }
-          // if (score > bestScore) {
-          //   bestScore = score;
-          //   move = { i, j };
-          //   break;
-          // }
         }
       }
 
@@ -304,8 +294,6 @@ function App(props) {
       move = { i:resultOPlayer.row , j: resultOPlayer.column };
     }
 
-    //let aiBlock = minimax(newMatrix, 0, false);
-
     matrix[move.i][move.j] = AIPlayer;
     setMatrix(matrix);
     sleep(5000);
@@ -322,7 +310,7 @@ function App(props) {
           
           clearTimeout(timeout);
           handleRestart();
-         // clearTimeout(timeout);
+
         } else if (winner === AIPlayer) {
           alert(AIPlayer + " player won");
           
@@ -380,9 +368,6 @@ function App(props) {
     if (!isPlayerMove) {
       const newMatrix = [...matrix];
 
-      // if (newMatrix[row][column] !== null) {
-      //   alert("select other block");
-      // } else {
         if (matrix[row][column] == null) {
           matrix[row][column] = "x";
           setMatrix(matrix);
@@ -406,8 +391,6 @@ function App(props) {
           setPlayerMove(true);
           setMark("x");
         }
-
-        //}
     }
   };
 
@@ -609,5 +592,9 @@ function App(props) {
     </div>
   );
 }
+
+  var sectionStyle = {
+    backgroundImage: `url(${BGImage})`,
+  };
  
 export default ChangeTimeoutPopupHOC(App);
