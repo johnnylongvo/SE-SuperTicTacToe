@@ -171,8 +171,9 @@ export function Game(props) {
             break;
             
           } else          
-          if (!found) {
+          if (!found && newMatrix[i][j] === null) {
             move = { i, j };
+            found = true;
             break;
           }
         }
@@ -199,7 +200,8 @@ export function Game(props) {
     //matrix[move.i][move.j] = AIPlayer;
     //setMatrix(matrix);
     // sleep(5000);
-    updateGameMatrix(move.i, move.j, playerSymbol);
+    if(move !== undefined)
+      updateGameMatrix(move.j, move.i, playerSymbol);
     //setPlayerMove(false);
   };
 

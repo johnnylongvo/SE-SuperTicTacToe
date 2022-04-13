@@ -144,6 +144,7 @@ function App(props) {
   }
 
   function checkWinner(board, player) {
+   
     let winner = null;
     var row,column;
 
@@ -205,7 +206,7 @@ function App(props) {
     }
 
     let resultDiagonal2 = countXPlayerWins(diagonal2, player);
-    if (resultDiagonal2.status === true && resultDiagonal2.index != undefined) {
+    if (resultDiagonal2.status === true && resultDiagonal2.index !== undefined) {
       winner= player;
       row= resultDiagonal2.index;
       column = (4-resultDiagonal2.index);        
