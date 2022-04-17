@@ -531,11 +531,6 @@ function App(props) {
         }
         </div>
         
-       
-         {
-          isPlayOnlineSelected &&
-          <PlayOnline onRestart={handleRestart} checkResult={checkGameResult} checkWinner={checkWinner}/>
-        }
         <div className="row justify-content-md-center">
           <ButtonToolbar aria-label="Toolbar with button groups">
             <div className="col d-grid justify-content-md-center">
@@ -607,11 +602,16 @@ function App(props) {
           </div>
         ) : isAISelected ? (
           <AIvsAI matrix={matrix} />
-        ) : (
+        ) :    isPlayOnlineSelected ? 
+        (<PlayOnline onRestart={handleRestart} checkResult={checkGameResult} checkWinner={checkWinner}/>)
+        :(
           <div className="start-game mt-2">
             <h2>Please select any mode</h2>
           </div>
         )}
+
+{
+              }
         
       </div>
     </div>

@@ -195,6 +195,40 @@ export function Game(props) {
       move = { i:resultOPlayer.row , j: resultOPlayer.column };
     }
 
+    let column;
+    let isFound = false;
+    var count = 0;
+    
+    while(!isFound){
+      let rowIndex = getRndInteger(0, 4);
+      let columnIndex = getRndInteger(0, 4);
+      count++;
+
+      if(newMatrix[rowIndex][columnIndex] === null){
+        isFound = true;
+        move.i = rowIndex;
+        move.j = columnIndex;
+      }
+      if(count > 10000){
+        isFound = true;
+      }
+    }
+
+    if(count>10000){
+    for(let i = 0 ; i < 5; i++){
+      for(let j=0; j< 5;j++)
+      {
+        if(matrix[i][j]===null){
+          move.i=i;
+          move.j = j;
+          console.log(i, j);
+        }
+      }
+    }
+  }
+    
+
+
     //let aiBlock = minimax(newMatrix, 0, false);
 
     //matrix[move.i][move.j] = AIPlayer;
@@ -204,6 +238,11 @@ export function Game(props) {
       updateGameMatrix(move.j, move.i, playerSymbol);
     //setPlayerMove(false);
   };
+
+  function getRndInteger(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+  }
+
 
   const updateGameMatrix = (column, row, symbol) => {
     const newMatrix = [...matrix];
@@ -308,7 +347,7 @@ export function Game(props) {
       <button onClick={buttonHandler} className="btn btn-primary">Restart</button>
       </>
       }
-      {(!isGameStarted || !isPlayerTurn) && <div className="PlayStopper" />}
+      {((!isGameStarted || !isPlayerTurn) && result.length==0) && <div className="PlayStopper" />}
       {result.length ? <h1>{result}</h1> : null}
       <div className="row d-flex justify-content-center">
             <table className="table">
@@ -323,9 +362,9 @@ export function Game(props) {
                 <button
                   className="cell btn btn-secondary"
                   id={outerIndex * 5 + innerIndex}
-                  onClick={() =>
-                    updateGameMatrix(innerIndex, outerIndex, playerSymbol)
-                  }
+                  // onClick={() =>
+                  //   updateGameMatrix(innerIndex, outerIndex, playerSymbol)
+                  // }
                 >
                   {column && column !== "null" ? (
                     column === "x" ? (
