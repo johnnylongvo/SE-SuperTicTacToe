@@ -54,9 +54,9 @@ button .cell {
 }
 
 .x-color{
-  color: blue;
+  color: rgb(0, 255, 145);
 }
 
 .o-color{
-  color: red;
+  color: rgb(249, 170, 0);
 }

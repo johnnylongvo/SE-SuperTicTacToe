@@ -343,9 +343,6 @@ function App(props) {
     if (!isPlayerMove) {
       const newMatrix = [...matrix];
 
-      // if (newMatrix[row][column] !== null) {
-      //   alert("select other block");
-      // } else {
         if (matrix[row][column] == null) {
           matrix[row][column] = "x";
           setMatrix(matrix);
@@ -369,13 +366,7 @@ function App(props) {
           setPlayerMove(true);
           setMark("x");
         }
-
-      //}
     }
-  };
-
-  const handlePlayAI = () => {
-    setIsGameSelected(true);
   };
 
   const handleRestart = () => {
@@ -388,6 +379,10 @@ function App(props) {
       [null, null, null, null, null],
       [null, null, null, null, null],
     ]);
+  };
+
+  const handlePlayAI = () => {
+    setIsGameSelected(true);
   };
 
   const handleAIvsAI = () => {
@@ -440,9 +435,6 @@ function App(props) {
       }
     }
   }
-
-    // console.log('x ', row, column, newMatrix[row][column], isPlayerMove);
-    // console.log(newMatrix);
 
     handleAIvsAIClick(row,column);
   };

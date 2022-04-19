@@ -23,7 +23,9 @@ const statusDisplay = document.querySelector('.game--status');
 
 let gameActive = true;
 let currentPlayer = "X";
-let gameState = ["", "", "", "", "", "", "", "", ""];
+let gameState = ["", "", "", 
+                 "", "", "", 
+                 "", "", ""];
 
 const winningMessage = () => `Player ${currentPlayer} has won!`;
 const drawMessage = () => `Game ended in a draw!`;
@@ -103,7 +105,6 @@ function handleRestartGame() {
     statusDisplay.innerHTML = currentPlayerTurn();
     document.querySelectorAll('.cell').forEach(cell => cell.innerHTML = "");
 }
-
 
 document.querySelectorAll('.cell').forEach(cell => cell.addEventListener('click', handleCellClick));
 document.querySelector('.game--restart').addEventListener('click', handleRestartGame);
