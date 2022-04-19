@@ -103,42 +103,8 @@ export function Game(props) {
 
     return [false, false];
   };
-
-  // const timeout = setTimeout(() => {
-  //   if (!allFilled)
-  //     computerMove();
-  // }, 5000);
-
-  // const computerMove = () => {
-  //   const newMatrix = [...matrix];
-  //   let col = 0, row = 0;
-
-  //   let found = false;
-  //   newMatrix.forEach(function (cell, rowIndex) {
-  //     cell.forEach((item, colIndex) => {
-  //       if (item == null) {
-  //         col = colIndex;
-  //         row = rowIndex;
-  //         found = true;
-  //         return;
-  //       } else {
-  //         //allFilled = true;
-  //       }
-  //     });
-
-  //     if (found)
-  //       return;
-
-  //   });
-
-  //   if (found && isPlayerTurn) {
-  //     updateGameMatrix(col, row, playerSymbol);
-  //   }
-
-  // }
-
   
-  const computerMove = () => {
+  const computerMove = (symbol) => {
     const newMatrix = _.cloneDeep(matrix);
     let bestScore = -Infinity;
     let move;
@@ -227,16 +193,16 @@ export function Game(props) {
     }
   }
     
-
-
     //let aiBlock = minimax(newMatrix, 0, false);
 
     //matrix[move.i][move.j] = AIPlayer;
     //setMatrix(matrix);
     // sleep(5000);
-    if(move !== undefined)
-      updateGameMatrix(move.j, move.i, playerSymbol);
+    if(move !== undefined){
+      updateGameMatrix(move.j, move.i, symbol);
+    }
     //setPlayerMove(false);
+    setPlayerTurn(true);
   };
 
   function getRndInteger(min, max) {
@@ -265,7 +231,7 @@ export function Game(props) {
         setResult("You Won!");
       }
 
-      setPlayerTurn(false);
+      //setPlayerTurn(false);
     }
     console.log("isPlayerTurn => ", isPlayerTurn);
     console.log("playerSymbol => ", playerSymbol);
@@ -277,7 +243,7 @@ export function Game(props) {
         console.log("update => ", newMatrix);
         setMatrix(newMatrix);
         checkGameState(newMatrix);
-        setPlayerTurn(true);
+        //setPlayerTurn(true);
         console.log("isPlayerTurn => ", isPlayerTurn);
         console.log("playerSymbol => ", playerSymbol);
         //if (isPlayerTurn)
@@ -291,8 +257,8 @@ export function Game(props) {
         console.log("start => ", options);
         setGameStarted(true);
         setPlayerSymbol(options.symbol);
-        if (options.start) setPlayerTurn(true);
-        else setPlayerTurn(false);
+        // if (options.start) setPlayerTurn(true);
+        // else setPlayerTurn(false);
 
       });
   };
@@ -311,7 +277,7 @@ export function Game(props) {
     handleGameUpdate();
     handleGameStart();
     handleGameWin();
-    handleRestart();
+    //handleRestart();
   }, []);
 
   const handleRestart = () =>{
@@ -324,11 +290,21 @@ export function Game(props) {
   }
 
   useEffect(() => {
-    if (isPlayerTurn)
+    if (!isPlayerTurn)
       setTimeout(() => {
-        computerMove();
+        if(playerSymbol === humanPlayer)
+          computerMove(AIPlayer);
+        else 
+          computerMove(humanPlayer);
+       // computerMove();
       }, 1000);
   }, [isPlayerTurn]);
+
+ const handlePlayerClick = (innerIndex, outerIndex, playerSymbol)=>{
+  setPlayerSymbol(playerSymbol);
+  updateGameMatrix(innerIndex, outerIndex, playerSymbol);
+  setPlayerTurn(false);
+ }
   
   const buttonHandler = ()=>{
     if(socketService.socket)
@@ -337,6 +313,14 @@ export function Game(props) {
       props.onRestart();
     }
   }
+
+  const selectPlayer = (playerSelection)=>{
+    setPlayerSymbol(playerSelection);
+    //handleGameUpdate();
+    //handleGameStart();
+    //handleGameWin();
+  }
+
   return (
     <div className="container w-80 bg-opacity-25">
       {!isGameStarted ? (
@@ -347,7 +331,14 @@ export function Game(props) {
       <button onClick={buttonHandler} className="btn btn-primary">Restart</button>
       </>
       }
-      {((!isGameStarted || !isPlayerTurn) && result.length==0) && <div className="PlayStopper" />}
+      { true ? (
+        <>
+      <h1>Select option : </h1>
+      <button onClick={()=>selectPlayer(humanPlayer)} className="btn btn-primary">X</button>
+      <button onClick={()=>selectPlayer(AIPlayer)} className="btn btn-primary">O</button>
+      </>): ''
+      }
+      {/* {((!isGameStarted || !isPlayerTurn) && result.length==0) && <div className="PlayStopper" />} */}
       {result.length ? <h1>{result}</h1> : null}
       <div className="row d-flex justify-content-center">
             <table className="table">
@@ -362,9 +353,9 @@ export function Game(props) {
                 <button
                   className="cell btn btn-secondary"
                   id={outerIndex * 5 + innerIndex}
-                  // onClick={() =>
-                  //   updateGameMatrix(innerIndex, outerIndex, playerSymbol)
-                  // }
+                  onClick={() =>
+                    handlePlayerClick(innerIndex, outerIndex, playerSymbol)
+                  }
                 >
                   {column && column !== "null" ? (
                     column === "x" ? (

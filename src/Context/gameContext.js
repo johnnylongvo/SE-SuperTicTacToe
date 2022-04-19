@@ -5,7 +5,7 @@ const defaultState = {
   setInRoom: () => {},
   playerSymbol: "x",
   setPlayerSymbol: () => {},
-  isPlayerTurn: false,
+  isPlayerTurn: true,
   setPlayerTurn: () => {},
   isGameStarted: false,
   setGameStarted: () => {},
