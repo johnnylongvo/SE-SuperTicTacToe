@@ -12,6 +12,9 @@ import _ from "lodash";
 
 export function Game(props) {
   const [mark, setMark] = useState('');
+  const [isOptionSelected, setIsOptionSelected] = useState(false);
+  const [isComputer, setIsComputer] = useState(false);
+
   const humanPlayer = "x";
   const AIPlayer = "o";
 
@@ -273,10 +276,26 @@ export function Game(props) {
       });
   };
 
+  const handleSetSelection= () => {
+    if (socketService.socket)
+      gameActionService.onSetSelection(socketService.socket, (message) => {
+        console.log("selection=> ", message);
+        setIsOptionSelected(message?.isSelected);
+        setIsComputer(true);
+        
+        if(message?.playerSelection === humanPlayer)
+          setPlayerSymbol(AIPlayer);
+        else 
+          setPlayerSymbol(humanPlayer);
+       
+      });
+  };
+
   useEffect(() => {
     handleGameUpdate();
     handleGameStart();
     handleGameWin();
+    handleSetSelection();
     //handleRestart();
   }, []);
 
@@ -314,8 +333,17 @@ export function Game(props) {
     }
   }
 
+  const setPlayerSelection = ()=>{
+    if(socketService.socket)
+    {
+      gameActionService.setSelection(socketService.socket,{playerSelection: playerSymbol, isSelected: true});
+    }
+  }
+
   const selectPlayer = (playerSelection)=>{
     setPlayerSymbol(playerSelection);
+    setIsOptionSelected(true);
+    setPlayerSelection();
     //handleGameUpdate();
     //handleGameStart();
     //handleGameWin();
@@ -331,16 +359,16 @@ export function Game(props) {
       <button onClick={buttonHandler} className="btn btn-primary">Restart</button>
       </>
       }
-      { true ? (
+      { !isOptionSelected ? (
         <>
       <h1>Select option : </h1>
       <button onClick={()=>selectPlayer(humanPlayer)} className="btn btn-primary">X</button>
       <button onClick={()=>selectPlayer(AIPlayer)} className="btn btn-primary">O</button>
       </>): ''
       }
-      {/* {((!isGameStarted || !isPlayerTurn) && result.length==0) && <div className="PlayStopper" />} */}
+      {(isComputer) && <div className="PlayStopper" />}
       {result.length ? <h1>{result}</h1> : null}
-      <div className="row d-flex justify-content-center">
+      { isOptionSelected ? <div className="row d-flex justify-content-center">
             <table className="table">
               <tbody>
         {matrix.map((row, outerIndex) => (
@@ -371,7 +399,7 @@ export function Game(props) {
             ))}
             </tbody>
             </table>
-            </div>
+            </div>: ''}
     </div>
   );
 }

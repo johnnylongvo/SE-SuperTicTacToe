@@ -43,6 +43,18 @@
       return listiner(restartFlag)
     });
   }
+
+  async setSelection(socket, restartFlag) {
+    socket.emit("Set player selection", { restartFlag });
+  }
+
+  async onSetSelection(socket, listiner) {
+    socket.on("setSelection", ({ restartFlag }) => {
+      debugger
+      console.log("setSelection>>>>>>>>",restartFlag)
+      return listiner(restartFlag)
+    });
+  }
 }
 
 export default new GameActionService();

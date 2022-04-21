@@ -51,4 +51,18 @@ export class controllerForGame {
     io.in(gameRoom).socketsLeave(gameRoom);
     console.log("game room flag>>>>",gameRoom)
   }
+
+  @OnMessage("Set player selection")
+  public async setSelection(
+    @SocketIO() io: Server,
+    @ConnectedSocket() s: Socket,
+    @MessageBody() sendRFlag: any
+  ) {
+    // console.log("socket>>>>",s,"io>>>>",io)
+    const gameRoom = this.get_socketForGameRoom(s);
+    //console.log("Message room flag>>>>",sendRFlag)
+    s.to(gameRoom).emit("setSelection", sendRFlag);
+    // io.in(gameRoom).socketsLeave(gameRoom);
+    // console.log("game room flag>>>>",gameRoom)
+  }
 }
