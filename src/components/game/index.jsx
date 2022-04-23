@@ -152,6 +152,8 @@ export function Game(props) {
     }
 
     //check best positon of 'o'
+    debugger
+    const [currentPlayerWon, otherPlayerWon]= checkGameState(newMatrix);
     let resultOPlayer = props.checkWinner(newMatrix, AIPlayer);
 
     if (
@@ -201,7 +203,8 @@ export function Game(props) {
     //matrix[move.i][move.j] = AIPlayer;
     //setMatrix(matrix);
     // sleep(5000);
-    if(move !== undefined){
+    if(move !== undefined && (currentPlayerWon !=true && otherPlayerWon!==true)){
+      debugger
       updateGameMatrix(move.j, move.i, symbol);
     }
     //setPlayerMove(false);
@@ -229,6 +232,7 @@ export function Game(props) {
         // alert("The Game is a TIE!");
         setResult("Game Draw");
       } else if (currentPlayerWon && !otherPlayerWon) {
+        debugger
         gameActionService.win(socketService.socket, "You Lost!");
         // alert("You Won!");
         setResult("You Won!");
@@ -269,6 +273,7 @@ export function Game(props) {
   const handleGameWin = () => {
     if (socketService.socket)
       gameActionService.onWin(socketService.socket, (message) => {
+        debugger
         console.log("win=> ", message);
         setPlayerTurn(false);
         // alert(message);
@@ -296,7 +301,7 @@ export function Game(props) {
     handleGameStart();
     handleGameWin();
     handleSetSelection();
-    //handleRestart();
+    handleRestart();
   }, []);
 
   const handleRestart = () =>{
@@ -309,7 +314,9 @@ export function Game(props) {
   }
 
   useEffect(() => {
-    if (!isPlayerTurn)
+    if(result.length==0)
+    if (!isPlayerTurn )
+    {
       setTimeout(() => {
         if(playerSymbol === humanPlayer)
           computerMove(AIPlayer);
@@ -317,7 +324,8 @@ export function Game(props) {
           computerMove(humanPlayer);
        // computerMove();
       }, 1000);
-  }, [isPlayerTurn]);
+    }
+  }, [isPlayerTurn ]);
 
  const handlePlayerClick = (innerIndex, outerIndex, playerSymbol)=>{
   setPlayerSymbol(playerSymbol);
@@ -361,9 +369,23 @@ export function Game(props) {
       }
       { !isOptionSelected ? (
         <>
-      <h1>Select option : </h1>
-      <button onClick={()=>selectPlayer(humanPlayer)} className="btn btn-primary">X</button>
-      <button onClick={()=>selectPlayer(AIPlayer)} className="btn btn-primary">O</button>
+      <h1>How do you want to play :</h1>
+      <div className="row">
+        <div className="col-md-6">
+          <input   type="radio" name="flexRadioDisabled" id="flexRadioDisabled"  onChange={()=>selectPlayer(humanPlayer)}/>
+          <label className="form-check-label h3" for="flexRadioDisabled">
+            As Xs (X) 
+          </label>
+        </div>
+        <div className="col-md-6">
+          <input   type="radio" name="flexRadioDisabled" id="flexRadioCheckedDisabled" onChange={()=>selectPlayer(AIPlayer)}/>
+          <label className="form-check-label h3" for="flexRadioCheckedDisabled">
+            As Os (O) 
+          </label>
+        </div>
+      </div>
+      {/* <button onClick={()=>selectPlayer(humanPlayer)} className="btn btn-primary">X</button>
+      <button onClick={()=>selectPlayer(AIPlayer)} className="btn btn-primary">O</button> */}
       </>): ''
       }
       {(isComputer) && <div className="PlayStopper" />}
