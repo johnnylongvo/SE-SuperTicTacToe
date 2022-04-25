@@ -8,7 +8,7 @@ import { Game } from "../game";
 function PlayOnline(props) {
   const [isInRoom, setInRoom] = useState(false);
   const [playerSymbol, setPlayerSymbol] = useState("x");
-  const [isPlayerTurn, setPlayerTurn] = useState(false);
+  const [isPlayerTurn, setPlayerTurn] = useState(true);
   const [isGameStarted, setGameStarted] = useState(false);
 
   const connectSocket = async () => {

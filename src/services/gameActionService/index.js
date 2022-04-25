@@ -26,7 +26,7 @@
   }
 
   async win(socket, message) {
-    socket.emit("Winner chicken dinner", { message });
+    socket.emit("Winner", { message });
   }
 
   async onWin(socket, listiner) {

@@ -374,13 +374,13 @@ export function Game(props) {
         <div className="col-md-6">
           <input   type="radio" name="flexRadioDisabled" id="flexRadioDisabled"  onChange={()=>selectPlayer(humanPlayer)}/>
           <label className="form-check-label h3" for="flexRadioDisabled">
-            As Xs (X) 
+          As Xs (X) 
           </label>
         </div>
         <div className="col-md-6">
           <input   type="radio" name="flexRadioDisabled" id="flexRadioCheckedDisabled" onChange={()=>selectPlayer(AIPlayer)}/>
           <label className="form-check-label h3" for="flexRadioCheckedDisabled">
-            As Os (O) 
+          As Os (O)
           </label>
         </div>
       </div>
@@ -403,9 +403,9 @@ export function Game(props) {
                 <button
                   className="cell btn btn-secondary"
                   id={outerIndex * 5 + innerIndex}
-                  onClick={() =>
+                  onClick={result.length == 0 ? () =>
                     handlePlayerClick(innerIndex, outerIndex, playerSymbol)
-                  }
+                  :""}
                 >
                   {column && column !== "null" ? (
                     column === "x" ? (
