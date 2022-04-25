@@ -113,22 +113,44 @@ export function Game(props) {
     let move;
     let col = 0,
       row = 0,
-      found = false;
+      found = false, player= '';
+      if(symbol === humanPlayer)player = AIPlayer;
+      else if((symbol === AIPlayer)) player = humanPlayer;
+
+      const [currentPlayerWon, otherPlayerWon]= checkGameState(newMatrix);
+      let resultOPlayer = props.checkWinner(newMatrix, player);
+      let isFound = false;
+      console.log("resultOPlayer ", resultOPlayer);
+      console.log("found ", found);
+  
+      if (
+        resultOPlayer.row !== null &&
+        resultOPlayer.column !== null &&
+        resultOPlayer.row !== undefined &&
+        resultOPlayer.column !== undefined
+      ) {
+        move = { i:resultOPlayer.row , j: resultOPlayer.column };
+        isFound = newMatrix[resultOPlayer.row][resultOPlayer.column] == null ? true : false;
+      }
+  
+     
 
     //check x player is winning or not
-    for (let i = 0; i < 5; i++) {
+
+    if(resultOPlayer.column === undefined){
+      for (let i = 0; i < 5; i++) {
       for (let j = 0; j < 5; j++) {
         // Is the spot available?
         if (newMatrix[i][j] == null) {
-          newMatrix[i][j] = humanPlayer;
+          newMatrix[i][j] = symbol;
 
-          let result = props.checkWinner(newMatrix, humanPlayer);
+          let result = props.checkWinner(newMatrix, symbol);
           newMatrix[i][j] = null;
           //first case user select any box except middle
           if (newMatrix[2][2] === null) {
             move = { i: 2, j: 2 };
             found = true;
-          } else if (result.winner === humanPlayer && (result.row !== undefined && result.column !== undefined)) {
+          } else if (result.winner === symbol && (result.row !== undefined && result.column !== undefined)) {
             //winning conidtion for  'x'
             move = { i:result.row , j: result.column };
             found = true;
@@ -149,25 +171,16 @@ export function Game(props) {
       }
 
       if (found) break;
+      }
+      if(found){
+        isFound = newMatrix[move.i][move.i] == null ? true : false;
+      }
     }
 
     //check best positon of 'o'
-    debugger
-    const [currentPlayerWon, otherPlayerWon]= checkGameState(newMatrix);
-    let resultOPlayer = props.checkWinner(newMatrix, AIPlayer);
-
-    if (
-      !found &&
-      resultOPlayer.row !== null &&
-      resultOPlayer.column !== null &&
-      resultOPlayer.row !== undefined &&
-      resultOPlayer.column !== undefined
-    ) {
-      move = { i:resultOPlayer.row , j: resultOPlayer.column };
-    }
+   
 
     let column;
-    let isFound = false;
     var count = 0;
     
     while(!isFound){
@@ -204,7 +217,6 @@ export function Game(props) {
     //setMatrix(matrix);
     // sleep(5000);
     if(move !== undefined && (currentPlayerWon !=true && otherPlayerWon!==true)){
-      debugger
       updateGameMatrix(move.j, move.i, symbol);
     }
     //setPlayerMove(false);
@@ -232,7 +244,7 @@ export function Game(props) {
         // alert("The Game is a TIE!");
         setResult("Game Draw");
       } else if (currentPlayerWon && !otherPlayerWon) {
-        debugger
+     
         gameActionService.win(socketService.socket, "You Lost!");
         // alert("You Won!");
         setResult("You Won!");
@@ -240,8 +252,6 @@ export function Game(props) {
 
       //setPlayerTurn(false);
     }
-    console.log("isPlayerTurn => ", isPlayerTurn);
-    console.log("playerSymbol => ", playerSymbol);
   };
 
   const handleGameUpdate = () => {
@@ -251,8 +261,6 @@ export function Game(props) {
         setMatrix(newMatrix);
         checkGameState(newMatrix);
         //setPlayerTurn(true);
-        console.log("isPlayerTurn => ", isPlayerTurn);
-        console.log("playerSymbol => ", playerSymbol);
         //if (isPlayerTurn)
         //computerMove();
       });
@@ -261,7 +269,6 @@ export function Game(props) {
   const handleGameStart = () => {
     if (socketService.socket)
       gameActionService.onStart(socketService.socket, (options) => {
-        console.log("start => ", options);
         setGameStarted(true);
         setPlayerSymbol(options.symbol);
         // if (options.start) setPlayerTurn(true);
@@ -273,8 +280,6 @@ export function Game(props) {
   const handleGameWin = () => {
     if (socketService.socket)
       gameActionService.onWin(socketService.socket, (message) => {
-        debugger
-        console.log("win=> ", message);
         setPlayerTurn(false);
         // alert(message);
         setResult(message);
@@ -284,7 +289,6 @@ export function Game(props) {
   const handleSetSelection= () => {
     if (socketService.socket)
       gameActionService.onSetSelection(socketService.socket, (message) => {
-        console.log("selection=> ", message);
         setIsOptionSelected(message?.isSelected);
         setIsComputer(true);
         
@@ -325,7 +329,7 @@ export function Game(props) {
        // computerMove();
       }, 1000);
     }
-  }, [isPlayerTurn ]);
+  }, [isPlayerTurn]);
 
  const handlePlayerClick = (innerIndex, outerIndex, playerSymbol)=>{
   setPlayerSymbol(playerSymbol);

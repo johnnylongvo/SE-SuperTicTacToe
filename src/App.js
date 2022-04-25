@@ -148,18 +148,18 @@ function App(props) {
     let winner = null;
     var row,column;
 
-    for (let i = 0; i < matrix.length; i++) {
+    for (let i = 0; i < board.length; i++) {
       let columnArr = [];
       let rowArr = [];
     
       //get each column
-      for (let j = 0; j < matrix[i].length; j++) {
-        columnArr.push(matrix[j][i]);
+      for (let j = 0; j < board[i].length; j++) {
+        columnArr.push(board[j][i]);
       }
 
       //get each row
-      for (let k = 0; k < matrix[i].length; k++) {
-        rowArr.push(matrix[i][k]);
+      for (let k = 0; k < board[i].length; k++) {
+        rowArr.push(board[i][k]);
       }
 
       let resultColumn = countXPlayerWins(columnArr ,player);
@@ -182,7 +182,7 @@ function App(props) {
     for(let i = 0;i <5; i++){
       for(let j=0;j<5;j++){
         if(i === j){
-          diagonal1.push(matrix[i][j]);
+          diagonal1.push(board[i][j]);
         }
       }
     }
@@ -200,7 +200,7 @@ function App(props) {
     for(let i = 0;i <5; i++){
       for(let j=0;j<5;j++){
         if(i === (4-j)){
-          diagonal2.push(matrix[i][j]);
+          diagonal2.push(board[i][j]);
         }
       }
     }
