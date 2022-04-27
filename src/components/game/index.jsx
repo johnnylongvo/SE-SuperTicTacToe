@@ -332,9 +332,11 @@ export function Game(props) {
   }, [isPlayerTurn]);
 
  const handlePlayerClick = (innerIndex, outerIndex, playerSymbol)=>{
-  setPlayerSymbol(playerSymbol);
-  updateGameMatrix(innerIndex, outerIndex, playerSymbol);
-  setPlayerTurn(false);
+   if(matrix[outerIndex][innerIndex] === null){
+      setPlayerSymbol(playerSymbol);
+      updateGameMatrix(innerIndex, outerIndex, playerSymbol);
+      setPlayerTurn(false);
+   }
  }
   
   const buttonHandler = ()=>{
@@ -392,7 +394,7 @@ export function Game(props) {
       <button onClick={()=>selectPlayer(AIPlayer)} className="btn btn-primary">O</button> */}
       </>): ''
       }
-      {(isComputer) && <div className="PlayStopper" />}
+      {(isComputer || !isPlayerTurn) && <div className="PlayStopper" />}
       {result.length ? <h1>{result}</h1> : null}
       { isOptionSelected ? <div className="row d-flex justify-content-center">
             <table className="table">
